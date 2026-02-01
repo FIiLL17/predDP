@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мой профиль | VinylNeon</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+
+        :root {
+            --neon-blue: #0ff0fc;
+            --neon-pink: #ff00ff;
+            --neon-purple: #9d00ff;
+            --neon-green: #39ff14;
+            --neon-yellow: #ffd700;
+            --dark-bg: #0a0a0f;
+            --darker-bg: #050510;
+            --card-bg: rgba(20, 20, 35, 0.9);
+            --hover-bg: rgba(255, 255, 255, 0.05);
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: #f0f0f0;
+            min-height: 100vh;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 5% 10%, rgba(157, 0, 255, 0.03) 0%, transparent 20%),
+                radial-gradient(circle at 95% 90%, rgba(0, 255, 252, 0.03) 0%, transparent 20%);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 30px;
+            min-height: 100vh;
+        }
+
+        /* Боковое меню */
+        .sidebar {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 25px 20px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 
+                0 0 25px rgba(0, 255, 252, 0.1),
+                inset 0 0 20px rgba(0, 255, 252, 0.05);
+            backdrop-filter: blur(10px);
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(0, 255, 252, 0.1);
+        }
+
+        .user-avatar {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-right: 15px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .user-name {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--neon-blue);
+            margin-bottom: 5px;
+        }
+
+        .user-status {
+            font-size: 0.85rem;
+            color: var(--neon-green);
+            display: flex;
+            align-items: center;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--neon-green);
+            border-radius: 50%;
+            margin-right: 8px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Навигация */
+        .nav-menu {
+            list-style: none;
+            margin-bottom: 30px;
+        }
+
+        .nav-item {
+            margin-bottom: 10px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            border-radius: 12px;
+            color: #ccc;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+
+        .nav-link:hover {
+            background: var(--hover-bg);
+            color: white;
+            border-color: rgba(0, 255, 252, 0.1);
+        }
+
+        .nav-link.active {
+            background: linear-gradient(90deg, rgba(0, 255, 252, 0.15), rgba(157, 0, 255, 0.15));
+            color: var(--neon-blue);
+            border-color: rgba(0, 255, 252, 0.3);
+            box-shadow: 0 0 15px rgba(0, 255, 252, 0.2);
+        }
+
+        .nav-icon {
+            font-size: 1.2rem;
+            margin-right: 15px;
+            width: 24px;
+            text-align: center;
+        }
+
+        .nav-text {
+            font-weight: 500;
+        }
+
+        .nav-badge {
+            margin-left: auto;
+            background: var(--neon-pink);
+            color: white;
+            font-size: 0.75rem;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+
+        /* Статистика в сайдбаре */
+        .sidebar-stats {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+            border: 1px solid rgba(255, 0, 255, 0.1);
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .stat-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .stat-label {
+            color: #aaa;
+            font-size: 0.9rem;
+        }
+
+        .stat-value {
+            color: var(--neon-green);
+            font-weight: 600;
+        }
+
+        /* Основной контент */
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            color: var(--neon-blue);
+            text-shadow: 0 0 10px rgba(0, 255, 252, 0.5);
+        }
+
+        .page-subtitle {
+            color: #aaa;
+            margin-bottom: 25px;
+        }
+
+        /* Карточки */
+        .card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 0 25px rgba(157, 0, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(0, 255, 252, 0.2);
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            color: var(--neon-blue);
+            display: flex;
+            align-items: center;
+        }
+
+        .card-title i {
+            margin-right: 12px;
+        }
+
+        /* Личная информация */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .info-label {
+            color: #aaa;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+        }
+
+        .info-value {
+            font-size: 1.1rem;
+            color: white;
+            padding: 12px 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .edit-btn {
+            background: transparent;
+            color: var(--neon-blue);
+            border: 1px solid var(--neon-blue);
+            padding: 10px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            margin-top: 20px;
+            align-self: flex-start;
+        }
+
+        .edit-btn:hover {
+            background: rgba(0, 255, 252, 0.1);
+            box-shadow: 0 0 15px rgba(0, 255, 252, 0.3);
+        }
+
+        /* Таблица заказов */
+        .orders-table-container {
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+
+        .orders-table {
+            width: 100%;
+            min-width: 800px;
+            border-collapse: collapse;
+        }
+
+        .orders-table th {
+            text-align: left;
+            padding: 15px;
+            color: var(--neon-blue);
+            font-weight: 600;
+            border-bottom: 2px solid rgba(0, 255, 252, 0.3);
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .orders-table td {
+            padding: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            vertical-align: middle;
+        }
+
+        .orders-table tr:hover {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .order-id {
+            color: var(--neon-green);
+            font-weight: 500;
+            font-family: 'Courier New', monospace;
+        }
+
+        .order-status {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .status-completed {
+            background: rgba(57, 255, 20, 0.15);
+            color: var(--neon-green);
+            border: 1px solid rgba(57, 255, 20, 0.3);
+        }
+
+        .status-processing {
+            background: rgba(255, 215, 0, 0.15);
+            color: var(--neon-yellow);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .status-pending {
+            background: rgba(255, 0, 255, 0.15);
+            color: var(--neon-pink);
+            border: 1px solid rgba(255, 0, 255, 0.3);
+        }
+
+        .status-cancelled {
+            background: rgba(255, 50, 50, 0.15);
+            color: #ff3232;
+            border: 1px solid rgba(255, 50, 50, 0.3);
+        }
+
+        .action-btn {
+            background: transparent;
+            color: var(--neon-blue);
+            border: 1px solid var(--neon-blue);
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .action-btn:hover {
+            background: rgba(0, 255, 252, 0.1);
+            box-shadow: 0 0 10px rgba(0, 255, 252, 0.3);
+        }
+
+        /* Избранное */
+        .favorites-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 25px;
+        }
+
+        .fav-item {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 0, 255, 0.2);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .fav-item:hover {
+            border-color: var(--neon-pink);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(255, 0, 255, 0.3);
+        }
+
+        .fav-img {
+            height: 180px;
+            width: 100%;
+            background: linear-gradient(45deg, var(--neon-purple), var(--neon-blue));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            color: white;
+        }
+
+        .fav-info {
+            padding: 20px;
+        }
+
+        .fav-title {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: white;
+        }
+
+        .fav-price {
+            color: var(--neon-green);
+            font-weight: bold;
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+        }
+
+        .fav-actions {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .remove-fav {
+            background: transparent;
+            color: #ff5555;
+            border: 1px solid #ff5555;
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .remove-fav:hover {
+            background: rgba(255, 85, 85, 0.1);
+            box-shadow: 0 0 10px rgba(255, 85, 85, 0.3);
+        }
+
+        .add-to-cart {
+            background: transparent;
+            color: var(--neon-blue);
+            border: 1px solid var(--neon-blue);
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .add-to-cart:hover {
+            background: rgba(0, 255, 252, 0.1);
+            box-shadow: 0 0 10px rgba(0, 255, 252, 0.3);
+        }
+
+        /* Настройки */
+        .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .setting-item {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .setting-title {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: var(--neon-blue);
+        }
+
+        .setting-description {
+            color: #aaa;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 30px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 34px;
+            transition: .4s;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 3px;
+            background-color: #ccc;
+            border-radius: 50%;
+            transition: .4s;
+        }
+
+        input:checked + .toggle-slider {
+            background-color: var(--neon-blue);
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(28px);
+            background-color: white;
+        }
+
+        /* Адаптивность */
+        @media (max-width: 1200px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                position: static;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .info-grid, .settings-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .favorites-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
+            
+            .orders-table {
+                display: block;
+                overflow-x: auto;
+            }
+            
+            .card {
+                padding: 20px;
+            }
+        }
+
+        /* Стили для табов */
+        .content-section {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Активная ссылка в навигации */
+        .sidebar-nav a.active {
+            background: rgba(0, 255, 157, 0.1);
+            border-left: 3px solid var(--neon-green);
+            color: var(--neon-green);
+        }
+
+        /* Стили для карточек избранного */
+        .fav-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .fav-item:hover {
+            border-color: var(--neon-pink);
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(255, 47, 146, 0.3);
+        }
+
+        .fav-img {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--neon-pink), var(--neon-purple));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+
+        .fav-img i {
+            font-size: 24px;
+            color: white;
+        }
+
+        .fav-title {
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+            color: white;
+        }
+
+        .fav-price {
+            color: var(--neon-green);
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+        }
+
+        .fav-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .remove-fav, .add-to-cart {
+            padding: 8px 15px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .remove-fav {
+            background: rgba(255, 47, 146, 0.2);
+            color: var(--neon-pink);
+            border: 1px solid var(--neon-pink);
+        }
+
+        .remove-fav:hover {
+            background: var(--neon-pink);
+            color: black;
+        }
+
+        .add-to-cart {
+            background: rgba(0, 255, 157, 0.2);
+            color: var(--neon-green);
+            border: 1px solid var(--neon-green);
+        }
+
+        .add-to-cart:hover {
+            background: var(--neon-green);
+            color: black;
+        }
+
+        .logout-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 15px;
+            margin-top: 20px;
+            background: transparent;
+            color: #ff5555;
+            border: 1px solid #ff5555;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 85, 85, 0.1);
+            box-shadow: 0 0 15px rgba(255, 85, 85, 0.3);
+        }
+
+        /* Полоса прокрутки */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--darker-bg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(var(--neon-blue), var(--neon-pink));
+            border-radius: 4px;
+        }
+
+        /* Уведомления */
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--neon-pink);
+            color: white;
+            font-size: 0.7rem;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Боковое меню -->
+        <aside class="sidebar fade-in">
+            <div class="user-info">
+                <div class="user-avatar">ИК</div>
+                <div>
+                    <div class="user-name">Иван Козлов</div>
+                    <div class="user-status">
+                        <span class="status-dot"></span>
+                        <span>Премиум клиент</span>
+                    </div>
+                </div>
+            </div>
+            
+            <ul class="nav-menu sidebar-nav">
+                <li class="nav-item">
+                    <a href="#profile" class="nav-link active" data-section="profile">
+                        <i class="fas fa-user nav-icon"></i>
+                        <span class="nav-text">Профиль</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#orders" class="nav-link" data-section="orders">
+                        <i class="fas fa-shopping-bag nav-icon"></i>
+                        <span class="nav-text">Заказы</span>
+                        <span class="nav-badge" id="orders-count">0</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#favorites" class="nav-link" data-section="favorites">
+                        <i class="fas fa-heart nav-icon"></i>
+                        <span class="nav-text">Избранное</span>
+                        <span class="nav-badge" id="favorites-count">0</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#settings" class="nav-link" data-section="settings">
+                        <i class="fas fa-cog nav-icon"></i>
+                        <span class="nav-text">Настройки</span>
+                    </a>
+                </li>
+<li class="nav-item" id="adminNavItem" style="display: none;">
+    <a href="#" class="nav-link" id="adminPanelLink">
+        <i class="fas fa-shield-alt nav-icon"></i>
+        <span class="nav-text">Админ-панель</span>
+        <span class="nav-badge">ADMIN</span>
+    </a>
+</li>
+</section>
+            </ul>
+            
+            <div class="sidebar-stats">
+                <div class="stat-item">
+                    <span class="stat-label">Баланс бонусов:</span>
+                    <span class="stat-value">1 540 ₽</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Скидка:</span>
+                    <span class="stat-value">5%</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Заказов всего:</span>
+                    <span class="stat-value" id="total-orders">0</span>
+                </div>
+            </div>
+            
+            <button class="logout-btn" id="logoutBtn">
+                <i class="fas fa-sign-out-alt" style="margin-right: 10px;"></i>
+                Выйти из аккаунта
+            </button>
+        </aside>
+        
+        <!-- Основной контент -->
+        <main class="main-content">
+            <!-- Профиль (активный раздел по умолчанию) -->
+            <section id="profile" class="content-section active card fade-in">
+                <div class="content-header">
+                    <div>
+                        <h1 class="page-title">Профиль</h1>
+                        <p class="page-subtitle">Управление вашей персональной информацией</p>
+                    </div>
+                    <div class="user-status">
+                        <span class="status-dot"></span>
+                        <span>Аккаунт подтвержден</span>
+                    </div>
+                </div>
+                
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="info-label">Имя пользователя</span>
+                        <div id="profile-username" class="info-value">Загрузка...</div>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Электронная почта</span>
+                        <div id="profile-email" class="info-value">Загрузка...</div>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Дата регистрации</span>
+                        <div id="profile-created" class="info-value">Загрузка...</div>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Бонусные баллы</span>
+                        <div class="info-value">1 540 ₽</div>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Скидка</span>
+                        <div class="info-value">5%</div>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">ID пользователя</span>
+                        <div id="profile-id" class="info-value">Загрузка...</div>
+                    </div>
+                </div>
+                
+                <button class="edit-btn" onclick="editProfile()">
+                    <i class="fas fa-edit" style="margin-right: 8px;"></i>
+                    Редактировать данные
+                </button>
+            </section>
+            
+            <!-- Мои заказы -->
+            <section id="orders" class="content-section card">
+                <div class="content-header">
+                    <div>
+                        <h1 class="page-title">Мои заказы</h1>
+                        <p class="page-subtitle">История и статусы ваших заказов</p>
+                    </div>
+                    <button class="action-btn" onclick="viewAllOrders()">
+                        <i class="fas fa-history" style="margin-right: 8px;"></i>
+                        История всех заказов
+                    </button>
+                </div>
+                
+                <div class="orders-table-container">
+                    <table class="orders-table">
+                        <thead>
+                            <tr>
+                                <th>Номер заказа</th>
+                                <th>Дата</th>
+                                <th>Сумма</th>
+                                <th>Статус</th>
+                                <th>Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody id="orders-tbody">
+                            <!-- Заказы будут загружены динамически -->
+                            <tr>
+                                <td colspan="5" style="text-align: center; padding: 40px;">
+                                    <p>Загрузка заказов...</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+            
+            <!-- Избранное -->
+            <section id="favorites" class="content-section card">
+                <div class="content-header">
+                    <div>
+                        <h1 class="page-title">Избранное</h1>
+                        <p class="page-subtitle">Товары, которые вы сохранили</p>
+                    </div>
+                    <button class="action-btn" onclick="clearAllFavorites()">
+                        <i class="fas fa-trash" style="margin-right: 8px;"></i>
+                        Очистить избранное
+                    </button>
+                </div>
+                
+                <div id="favorites-grid" class="favorites-grid">
+                    <!-- Избранное будет загружено динамически -->
+                    <div class="empty-favorites">
+                        <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="var(--neon-pink)">
+                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                        </svg>
+                        <p>Загрузка избранного...</p>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Настройки -->
+            <section id="settings" class="content-section card">
+                <div class="content-header">
+                    <div>
+                        <h1 class="page-title">Настройки аккаунта</h1>
+                        <p class="page-subtitle">Управление настройками и уведомлениями</p>
+                    </div>
+                </div>
+                
+                <div class="settings-grid" id="settings-grid">
+                    <div class="setting-item">
+                        <h3 class="setting-title">Уведомления по email</h3>
+                        <p class="setting-description">Получать уведомления о статусах заказов, акциях и новостях</p>
+                        <label class="toggle-switch">
+                            <input type="checkbox" name="email_notifications" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <h3 class="setting-title">SMS-уведомления</h3>
+                        <p class="setting-description">Получать SMS о статусе доставки заказов</p>
+                        <label class="toggle-switch">
+                            <input type="checkbox" name="sms_notifications">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <h3 class="setting-title">Двухфакторная аутентификация</h3>
+                        <p class="setting-description">Дополнительная защита вашего аккаунта</p>
+                        <label class="toggle-switch">
+                            <input type="checkbox" name="two_factor_auth">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <h3 class="setting-title">Подписка на рассылку</h3>
+                        <p class="setting-description">Получать информацию о новых товарах и специальных предложениях</p>
+                        <label class="toggle-switch">
+                            <input type="checkbox" name="newsletter_subscription" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid rgba(255, 255, 255, 0.1);">
+                    <button class="edit-btn" onclick="saveSettings()">
+                        <i class="fas fa-save" style="margin-right: 8px;"></i>
+                        Сохранить настройки
+                    </button>
+                </div>
+                <!-- Админ-панель (только для администратора) -->
+<section id="admin" class="content-section card" >
+    <div class="content-header">
+        <div>
+            <h1 class="page-title">Админ-панель</h1>
+            <p class="page-subtitle">Управление системой VinylNeon</p>
+        </div>
+        <div class="user-status">
+            <span class="status-dot"></span>
+            <span>Администратор системы</span>
+        </div>
+    </div>
+    
+    <div id="admin-section">
+        <!-- Содержимое админ-панели будет загружено динамически -->
+        <div class="loading-spinner">
+            <i class="fas fa-spinner"></i>
+            <p>Загрузка админ-панели...</p>
+        </div>
+    </div>
+            </section>
+        </main>
+    </div>
+
+    
+
+    <!-- Отладочная кнопка -->
+    <button id="debugBtn" style="position: fixed; bottom: 10px; right: 10px; z-index: 9999; background: red; color: white; padding: 5px 10px; border: none; border-radius: 3px; cursor: pointer;">
+        DEBUG
+    </button>
+
+
+
+   <script>
+    // Простой скрипт для показа админ-панели
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Простая проверка админ-прав...');
+        
+        // Всегда показываем админ-панель для fill
+        const userStr = localStorage.getItem('vinylneon_user');
+        if (userStr) {
+            try {
+                const user = JSON.parse(userStr);
+                if (user.id === 1 || user.email === 'fill@gmail.com' || user.role === 'admin') {
+                    const adminNavItem = document.getElementById('adminNavItem');
+                    if (adminNavItem) {
+                        adminNavItem.style.display = 'block';
+                        
+                        // Добавляем обработчик клика
+                        const adminPanelLink = document.getElementById('adminPanelLink');
+                        if (adminPanelLink) {
+                            adminPanelLink.addEventListener('click', function(e) {
+                                e.preventDefault();
+                                console.log('Открываем админ-панель!');
+                                window.open('admin.html', '_blank');
+                            });
+                        }
+                    }
+                }
+            } catch (e) {
+                console.error('Ошибка:', e);
+            }
+        }
+    });
+</script>
+
+
+    <script src="js/auth-manager.js"></script>
+    <script src="js/user.js"></script>
+</body>
+</html>
