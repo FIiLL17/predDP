@@ -1,5 +1,5 @@
 <?php
-// /api/user/favorites.php - ПОЛНОСТЬЮ ИСПРАВЛЕННЫЙ
+// /api/user/favorites.php - ОБНОВЛЕННЫЙ
 
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
@@ -8,14 +8,28 @@ header('Access-Control-Allow-Headers: Authorization, Content-Type');
 
 require_once __DIR__ . '/../config/database.php';
 
-// Получаем токен из заголовка
-$headers = getallheaders();
+// Получаем токен из заголовка ИЛИ из query parameter
 $token = null;
 
+// 1. Проверяем заголовок Authorization
+$headers = getallheaders();
 if (isset($headers['Authorization'])) {
     $authHeader = $headers['Authorization'];
     if (preg_match('/Bearer\s+(.*)$/i', $authHeader, $matches)) {
         $token = $matches[1];
+    }
+}
+
+// 2. Если нет в заголовке, проверяем query parameter
+if (!$token && isset($_GET['token'])) {
+    $token = $_GET['token'];
+}
+
+// 3. Если все еще нет токена, проверяем POST данные для методов POST/DELETE
+if (!$token && ($_SERVER['REQUEST_METHOD'] === 'POST' || $_SERVER['REQUEST_METHOD'] === 'DELETE')) {
+    $input = json_decode(file_get_contents('php://input'), true);
+    if (isset($input['token'])) {
+        $token = $input['token'];
     }
 }
 

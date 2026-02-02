@@ -1,83 +1,73 @@
 <?php
-// /api/user/profile.php - ИСПРАВЛЕННЫЙ ВАРИАНТ
-
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Headers: Authorization, Content-Type');
 
-require_once __DIR__ . '/../config/database.php';
-
-// Получаем токен из заголовка
-$headers = getallheaders();
 $token = null;
 
+// Получаем токен
+$headers = getallheaders();
 if (isset($headers['Authorization'])) {
-    $authHeader = $headers['Authorization'];
-    if (preg_match('/Bearer\s+(.*)$/i', $authHeader, $matches)) {
+    if (preg_match('/Bearer\s+(.*)$/i', $headers['Authorization'], $matches)) {
         $token = $matches[1];
     }
 }
 
-// Если нет заголовка, проверяем POST/GET
 if (!$token && isset($_GET['token'])) {
     $token = $_GET['token'];
 }
 
 if (!$token) {
     http_response_code(401);
-    echo json_encode([
-        'success' => false,
-        'message' => 'Токен не предоставлен',
-        'headers_received' => $headers
-    ]);
+    echo json_encode(['success' => false, 'message' => 'Токен не предоставлен']);
     exit;
 }
 
 try {
-    $database = new Database();
-    $db = $database->getConnection();
+    $host = 'localhost';
+    $dbname = 'vinylneon_db';
+    $username = 'root';
+    $password = '';
     
-    if (!$db) {
-        throw new Exception('Ошибка подключения к БД');
+    $conn = new mysqli($host, $username, $password, $dbname);
+    
+    if ($conn->connect_error) {
+        throw new Exception('Ошибка подключения: ' . $conn->connect_error);
     }
     
-    // Ищем пользователя по токену (как в auth-fixed.js)
-    $query = "SELECT id, username, email, created_at FROM users WHERE token = :token";
-    $stmt = $db->prepare($query);
-    $stmt->bindParam(':token', $token);
-    $stmt->execute();
+    // Получаем данные пользователя
+    $query = "SELECT u.id, u.username, u.email, u.role, u.created_at,
+                     up.full_name, up.phone, up.bonus_points, up.discount_percent
+              FROM users u
+              LEFT JOIN user_profiles up ON u.id = up.user_id
+              WHERE u.token = ?";
     
-    if ($stmt->rowCount() === 1) {
-        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param('s', $token);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    
+    if ($result->num_rows === 1) {
+        $user = $result->fetch_assoc();
         
-        // Дополнительная информация о пользователе
-        $response = [
+        // Устанавливаем значения по умолчанию
+        if (!$user['bonus_points']) $user['bonus_points'] = 1000;
+        if (!$user['discount_percent']) $user['discount_percent'] = 5;
+        
+        echo json_encode([
             'success' => true,
-            'user' => [
-                'id' => $user['id'],
-                'username' => $user['username'],
-                'email' => $user['email'],
-                'created_at' => $user['created_at'],
-                'bonus_points' => 1540,
-                'discount_percent' => 5
-            ],
-            'message' => 'Профиль загружен'
-        ];
-        
-        echo json_encode($response);
+            'user' => $user
+        ]);
     } else {
         http_response_code(401);
-        echo json_encode([
-            'success' => false,
-            'message' => 'Пользователь не найден или токен недействителен'
-        ]);
+        echo json_encode(['success' => false, 'message' => 'Пользователь не найден']);
     }
+    
+    $stmt->close();
+    $conn->close();
     
 } catch (Exception $e) {
     http_response_code(500);
-    echo json_encode([
-        'success' => false,
-        'message' => 'Ошибка сервера: ' . $e->getMessage(),
-        'trace' => $e->getTraceAsString()
-    ]);
+    echo json_encode(['success' => false, 'message' => 'Ошибка сервера: ' . $e->getMessage()]);
 }
+?>

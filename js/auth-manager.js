@@ -594,13 +594,13 @@ if (document.readyState === 'loading') {
 }
 
 // Экспорт для использования в других модулях
-export {
-    login,
-    register,
-    logout,
-    isAuthenticated,
-    isAdmin,
-    getCurrentUser,
-    getToken,
-    ensureAuthenticated
-};
+// export {
+//     login,
+//     register,
+//     logout,
+//     isAuthenticated,
+//     isAdmin,
+//     getCurrentUser,
+//     getToken,
+//     ensureAuthenticated
+// };

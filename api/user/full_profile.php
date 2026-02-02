@@ -1,5 +1,6 @@
 <?php
-// /api/user/orders.php
+// /api/user/full_profile.php - Полные данные профиля
+
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Headers: Authorization, Content-Type');
@@ -17,7 +18,10 @@ if (isset($headers['Authorization'])) {
 
 if (!$token) {
     http_response_code(401);
-    echo json_encode(['success' => false, 'message' => 'Токен не предоставлен']);
+    echo json_encode([
+        'success' => false,
+        'message' => 'Токен не предоставлен'
+    ]);
     exit;
 }
 
@@ -35,42 +39,35 @@ try {
     }
     
     // Ищем пользователя по токену
-    $stmt = $conn->prepare("SELECT id FROM users WHERE token = ?");
+    $stmt = $conn->prepare("
+        SELECT u.id, u.username, u.email, u.role, u.created_at,
+               up.first_name, up.last_name, up.phone, up.birth_date,
+               up.city, up.address, up.bonus_points, up.discount_percent
+        FROM users u
+        LEFT JOIN user_profiles up ON u.id = up.user_id
+        WHERE u.token = ?
+    ");
+    
     $stmt->bind_param('s', $token);
     $stmt->execute();
     $result = $stmt->get_result();
     
-    if ($result->num_rows === 0) {
+    if ($result->num_rows === 1) {
+        $user = $result->fetch_assoc();
+        
+        echo json_encode([
+            'success' => true,
+            'profile' => $user,
+            'message' => 'Полные данные профиля загружены'
+        ]);
+    } else {
         http_response_code(401);
-        echo json_encode(['success' => false, 'message' => 'Пользователь не найден']);
-        exit;
+        echo json_encode([
+            'success' => false,
+            'message' => 'Пользователь не найден'
+        ]);
     }
     
-    $user = $result->fetch_assoc();
-    $user_id = $user['id'];
-    
-    // Получаем заказы пользователя
-    $ordersStmt = $conn->prepare("
-        SELECT * FROM orders 
-        WHERE user_id = ? 
-        ORDER BY created_at DESC
-    ");
-    $ordersStmt->bind_param('i', $user_id);
-    $ordersStmt->execute();
-    $ordersResult = $ordersStmt->get_result();
-    
-    $orders = [];
-    while ($row = $ordersResult->fetch_assoc()) {
-        $orders[] = $row;
-    }
-    
-    echo json_encode([
-        'success' => true,
-        'orders' => $orders,
-        'message' => 'Заказы загружены'
-    ]);
-    
-    $ordersStmt->close();
     $stmt->close();
     $conn->close();
     
