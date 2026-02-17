@@ -1,0 +1,1682 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Оформление заказа - VinylNeon</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background: 
+                radial-gradient(circle at 15% 20%, rgba(0, 240, 255, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 85% 80%, rgba(109, 92, 255, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(255, 47, 146, 0.05) 0%, transparent 60%),
+                var(--dark-bg);
+            color: var(--text-main);
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                url('data:image/svg+xml,<svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><circle cx="2" cy="2" r="1" fill="rgba(0, 240, 255, 0.1)"/></svg>') repeat;
+            opacity: 0.3;
+            z-index: -1;
+        }
+
+        /* Контейнер */
+        .checkout-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 120px 20px 50px;
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 30px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Заголовок */
+        .checkout-header {
+            grid-column: 1 / -1;
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .checkout-header h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 15px;
+            background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple), var(--neon-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 40px rgba(0, 240, 255, 0.3);
+            animation: titleGlow 3s ease-in-out infinite;
+        }
+
+        @keyframes titleGlow {
+            0%, 100% { text-shadow: 0 0 40px rgba(0, 240, 255, 0.3); }
+            50% { text-shadow: 0 0 60px rgba(255, 47, 146, 0.4), 0 0 80px rgba(0, 240, 255, 0.2); }
+        }
+
+        .checkout-header p {
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        /* Индикатор прогресса */
+        .checkout-progress {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 40px;
+            margin: 40px 0;
+            position: relative;
+        }
+
+        .checkout-progress::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: 50px;
+            right: 50px;
+            height: 2px;
+            background: linear-gradient(90deg, 
+                var(--neon-blue) 0%, 
+                var(--neon-purple) 33%, 
+                var(--neon-pink) 66%, 
+                var(--neon-green) 100%);
+            z-index: 0;
+        }
+
+        .progress-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            z-index: 1;
+        }
+
+        .step-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: var(--text-muted);
+            transition: all 0.3s ease;
+        }
+
+        .progress-step.active .step-circle {
+            background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
+            border-color: var(--neon-blue);
+            color: white;
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.5);
+            transform: scale(1.1);
+        }
+
+        .progress-step.completed .step-circle {
+            background: linear-gradient(135deg, var(--neon-green), var(--neon-blue));
+            border-color: var(--neon-green);
+            color: white;
+        }
+
+        .step-label {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .progress-step.active .step-label {
+            color: white;
+            font-weight: 600;
+        }
+
+        /* Основная форма */
+        .checkout-form {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 25px;
+            padding: 40px;
+            border: 1px solid rgba(0, 240, 255, 0.15);
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .checkout-form::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, 
+                var(--neon-blue), 
+                var(--neon-purple), 
+                var(--neon-pink));
+            border-radius: 25px 25px 0 0;
+        }
+
+        .form-section {
+            margin-bottom: 40px;
+            animation: sectionAppear 0.5s ease;
+        }
+
+        @keyframes sectionAppear {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .section-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: white;
+            box-shadow: 0 5px 15px rgba(0, 240, 255, 0.3);
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        .section-subtitle {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-top: 5px;
+        }
+
+        /* Группы полей */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .form-group label .required {
+            color: var(--neon-pink);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 16px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--neon-blue);
+            background: rgba(0, 240, 255, 0.05);
+            box-shadow: 0 0 0 3px rgba(0, 240, 255, 0.1);
+        }
+
+        .form-input:hover {
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .input-icon {
+            position: absolute;
+            right: 20px;
+            top: 45px;
+            color: var(--neon-blue);
+            font-size: 1.1rem;
+        }
+
+        /* Поле textarea */
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        /* Выбор адреса */
+        .address-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .address-option {
+            background: rgba(255, 255, 255, 0.03);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .address-option:hover {
+            background: rgba(0, 240, 255, 0.05);
+            border-color: rgba(0, 240, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .address-option.selected {
+            background: rgba(0, 240, 255, 0.1);
+            border-color: var(--neon-blue);
+            box-shadow: 0 10px 20px rgba(0, 240, 255, 0.2);
+        }
+
+        .address-option.selected::before {
+            content: '✓';
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 24px;
+            height: 24px;
+            background: var(--neon-blue);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .address-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--neon-purple), var(--neon-pink));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .address-title {
+            font-weight: 600;
+            color: white;
+            margin-bottom: 8px;
+        }
+
+        .address-details {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .new-address-btn {
+            background: linear-gradient(135deg, rgba(0, 240, 255, 0.1), rgba(109, 92, 255, 0.1));
+            border: 2px dashed rgba(0, 240, 255, 0.3);
+            border-radius: 15px;
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .new-address-btn:hover {
+            background: linear-gradient(135deg, rgba(0, 240, 255, 0.15), rgba(109, 92, 255, 0.15));
+            border-color: var(--neon-blue);
+        }
+
+        .new-address-btn i {
+            font-size: 2rem;
+            color: var(--neon-blue);
+        }
+
+        /* Выбор способа оплаты */
+        .payment-methods {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .payment-method {
+            background: rgba(255, 255, 255, 0.03);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .payment-method:hover {
+            background: rgba(0, 240, 255, 0.05);
+            border-color: rgba(0, 240, 255, 0.3);
+        }
+
+        .payment-method.selected {
+            background: rgba(0, 240, 255, 0.1);
+            border-color: var(--neon-blue);
+            box-shadow: 0 10px 20px rgba(0, 240, 255, 0.2);
+        }
+
+        .payment-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--neon-green), var(--neon-blue));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .payment-info h4 {
+            color: white;
+            font-size: 1rem;
+            margin-bottom: 5px;
+        }
+
+        .payment-info p {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        /* Боковая панель с заказом */
+        .order-summary {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 25px;
+            padding: 30px;
+            border: 1px solid rgba(0, 240, 255, 0.15);
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            position: sticky;
+            top: 120px;
+            height: fit-content;
+        }
+
+        .order-summary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--neon-pink), var(--neon-purple));
+            border-radius: 25px 25px 0 0;
+        }
+
+        .order-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .order-header h3 {
+            font-size: 1.8rem;
+            color: white;
+            margin-bottom: 10px;
+        }
+
+        .order-header p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        /* Товары в заказе */
+        .order-items {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 25px;
+            padding-right: 10px;
+        }
+
+        .order-items::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .order-items::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 3px;
+        }
+
+        .order-items::-webkit-scrollbar-thumb {
+            background: var(--neon-blue);
+            border-radius: 3px;
+        }
+
+        .order-item {
+            display: flex;
+            gap: 15px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            margin-bottom: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .order-item:hover {
+            background: rgba(0, 240, 255, 0.05);
+            border-color: rgba(0, 240, 255, 0.1);
+        }
+
+        .order-item-image {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .order-item-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .order-item-info {
+            flex: 1;
+        }
+
+        .order-item-title {
+            color: white;
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-bottom: 5px;
+        }
+
+        .order-item-artist {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-bottom: 8px;
+        }
+
+        .order-item-price {
+            color: var(--neon-green);
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        .order-item-quantity {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        /* Итоговая сумма */
+        .order-totals {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 20px;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            color: var(--text-muted);
+        }
+
+        .total-row.final {
+            color: white;
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .total-row.final .value {
+            color: var(--neon-green);
+            text-shadow: 0 0 10px rgba(0, 255, 157, 0.3);
+        }
+
+        /* Промокод */
+        .promo-code {
+            margin: 25px 0;
+        }
+
+        .promo-input {
+            display: flex;
+            gap: 10px;
+        }
+
+        .promo-input input {
+            flex: 1;
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: white;
+            font-size: 0.95rem;
+        }
+
+        .apply-promo-btn {
+            background: linear-gradient(135deg, var(--neon-purple), var(--neon-pink));
+            color: white;
+            border: none;
+            padding: 0 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .apply-promo-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(109, 92, 255, 0.3);
+        }
+
+        /* Чекбокс согласия */
+        .agreement-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 25px 0;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .agreement-checkbox input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            accent-color: var(--neon-blue);
+        }
+
+        .agreement-checkbox label {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            cursor: pointer;
+        }
+
+        .agreement-checkbox a {
+            color: var(--neon-blue);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .agreement-checkbox a:hover {
+            text-decoration: underline;
+        }
+
+        /* Кнопка подтверждения */
+        .confirm-order-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple), var(--neon-pink));
+            background-size: 200% 200%;
+            color: white;
+            border: none;
+            border-radius: 15px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            animation: gradientMove 3s ease infinite;
+        }
+
+        @keyframes gradientMove {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .confirm-order-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 
+                0 15px 30px rgba(0, 240, 255, 0.3),
+                0 0 0 1px rgba(0, 240, 255, 0.2);
+        }
+
+        .confirm-order-btn:active {
+            transform: translateY(-1px);
+        }
+
+        .confirm-order-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        .confirm-order-btn i {
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+
+        /* Защита платежей */
+        .payment-security {
+            text-align: center;
+            margin-top: 20px;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .payment-security i {
+            color: var(--neon-green);
+        }
+
+        /* Футер */
+        .checkout-footer {
+            grid-column: 1 / -1;
+            text-align: center;
+            margin-top: 50px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* Адаптивность */
+        @media (max-width: 1024px) {
+            .checkout-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .order-summary {
+                position: static;
+                margin-top: 30px;
+            }
+            
+            .checkout-header h1 {
+                font-size: 2.8rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .checkout-container {
+                padding: 100px 15px 30px;
+            }
+            
+            .checkout-header h1 {
+                font-size: 2.2rem;
+            }
+            
+            .checkout-form,
+            .order-summary {
+                padding: 25px;
+            }
+            
+            .section-title {
+                font-size: 1.5rem;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .checkout-progress {
+                gap: 20px;
+            }
+            
+            .checkout-progress::before {
+                left: 30px;
+                right: 30px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .checkout-header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .checkout-progress {
+                flex-direction: column;
+                gap: 25px;
+            }
+            
+            .checkout-progress::before {
+                display: none;
+            }
+            
+            .step-circle {
+                width: 35px;
+                height: 35px;
+            }
+            
+            .address-options,
+            .payment-methods {
+                grid-template-columns: 1fr;
+            }
+            
+            .promo-input {
+                flex-direction: column;
+            }
+            
+            .apply-promo-btn {
+                padding: 12px;
+            }
+        }
+
+        /* Анимация появления */
+        .fade-in {
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Неоновая полоса */
+        .neon-line {
+            height: 2px;
+            background: linear-gradient(90deg, 
+                transparent, 
+                var(--neon-blue), 
+                var(--neon-purple), 
+                var(--neon-pink),
+                transparent);
+            margin: 30px 0;
+            animation: lineGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes lineGlow {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        /* Дополнительные стили для checkout */
+        .checkout-notification {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            z-index: 10000;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+
+        .order-item-details {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-top: 5px;
+        }
+
+        .order-item-total {
+            display: flex;
+            align-items: center;
+            font-weight: bold;
+            color: var(--neon-green);
+        }
+
+        .default-badge {
+            display: inline-block;
+            background: var(--neon-green);
+            color: black;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            margin-left: 10px;
+            font-weight: bold;
+        }
+
+        .empty-cart {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-muted);
+        }
+
+        .empty-cart .btn {
+            background: var(--neon-blue);
+            color: black;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 15px;
+        }
+
+        .no-addresses-message {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .no-addresses-message .btn {
+            margin-top: 10px;
+            padding: 8px 16px;
+            background: var(--neon-blue);
+            color: black;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        /* Баннер для неавторизованных пользователей */
+        .auth-notification {
+            background: linear-gradient(90deg, rgba(255, 47, 146, 0.2), rgba(109, 92, 255, 0.2));
+            border: 1px solid rgba(255, 47, 146, 0.3);
+            border-radius: 12px;
+            padding: 15px 20px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .auth-notification-content {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: white;
+        }
+
+        .auth-notification-icon {
+            font-size: 1.5rem;
+            color: var(--neon-pink);
+        }
+
+        .auth-notification-text {
+            flex: 1;
+            font-size: 0.95rem;
+        }
+
+        .auth-notification-btn {
+            background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .auth-notification-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 240, 255, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <!-- Шапка сайта -->
+    <header class="site-header neon-header">
+        <!-- Верхняя панель с городом и контактами -->
+        <div class="header-top-bar neon-top-bar">
+            <div class="container">
+                <div class="location-selector neon-location">
+                    <svg class="location-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00ff9d">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                        <circle cx="12" cy="10" r="3"/>
+                    </svg>
+                    <select name="city" id="city-select" class="city-select neon-select">
+                        <option value="">Калининград</option>
+                        <option value="petersburg">Санкт-Петербург</option>
+                        <option value="samara">Самара</option>
+                        <option value="perm">Пермь</option>
+                        <option value="novosibirsk">Новосибирск</option>
+                    </select>
+                    <div class="contact-info">
+                        <a href="tel:+78001234567" class="phone-link neon-phone">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ff00ff">
+                                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                            </svg>
+                            8 (800) 123-45-67
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+<div id="debugInfo" style="display: none; background: rgba(255,0,0,0.1); padding: 10px; margin: 10px; border-radius: 5px;">
+    <p>Отладка: <span id="debugStatus">Загрузка...</span></p>
+</div>
+        <!-- Основная навигация -->
+        <div class="header-main neon-main">
+            <div class="container">
+                <!-- Логотип -->
+                <div class="header-logo">
+                    <a href="index.html" class="logo-link neon-logo">
+                        <span class="logo-text">Vinyl<span class="logo-highlight neon-glow">Neon</span></span>
+                    </a>
+                </div>
+
+                <!-- Навигационное меню -->
+                <nav class="header-nav neon-nav">
+                    <ul class="nav-list neon-nav-list">
+                        <li class="nav-item neon-nav-item">
+                            <a href="index.html" class="nav-link neon-nav-link">
+                                <span class="nav-icon">🎵</span>
+                                Главная
+                            </a>
+                        </li>
+                        <li class="nav-item neon-nav-item">
+                            <a href="user.html" class="nav-link neon-nav-link">
+                                <span class="nav-icon">👤</span>
+                                Профиль
+                            </a>
+                        </li>
+                        <li class="nav-item neon-nav-item">
+                            <a href="index.html" class="nav-link neon-nav-link">
+                                <span class="nav-icon">🛒</span>
+                                Корзина
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Основной контент -->
+    <main class="checkout-container">
+
+        <!-- Уведомление для неавторизованных пользователей -->
+        <div class="auth-notification" id="authNotification" style="display: none;">
+            <div class="auth-notification-content">
+                <i class="fas fa-info-circle auth-notification-icon"></i>
+                <div class="auth-notification-text">
+                    <strong>Вы не авторизованы.</strong> Войдите в систему, чтобы сохранить историю заказов и адреса доставки.
+                </div>
+            </div>
+            <button class="auth-notification-btn" onclick="window.location.href='index.html?login=true'">
+                <i class="fas fa-sign-in-alt"></i> Войти
+            </button>
+        </div>
+
+        <!-- Основная форма -->
+        <div class="checkout-form">
+            <!-- Шаг 1: Контактные данные -->
+            <div class="form-section active" id="contactSection">
+                <div class="section-header">
+                    <div class="section-icon">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div>
+                        <h2 class="section-title">Контактная информация</h2>
+                        <p class="section-subtitle">Укажите ваши данные для связи</p>
+                    </div>
+                </div>
+
+                <div class="form-grid" id="contactFormGrid">
+                    <!-- Форма будет заполнена через JavaScript -->
+                </div>
+            </div>
+
+            <!-- Неоновая линия -->
+            <div class="neon-line"></div>
+
+            <!-- Шаг 2: Адрес доставки -->
+            <div class="form-section" id="deliverySection">
+                <div class="section-header">
+                    <div class="section-icon">
+                        <i class="fas fa-truck"></i>
+                    </div>
+                    <div>
+                        <h2 class="section-title">Адрес доставки</h2>
+                        <p class="section-subtitle">Куда доставить ваши пластинки?</p>
+                    </div>
+                </div>
+
+                <div class="address-options" id="addressOptionsContainer">
+                    <!-- Адреса будут загружены через JavaScript -->
+                    <div class="new-address-btn">
+                        <i class="fas fa-plus-circle"></i>
+                        <div class="address-title">Добавить новый адрес</div>
+                        <div class="address-details">Нажмите для указания нового адреса</div>
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-top: 30px;">
+                    <label>Комментарий для курьера</label>
+                    <textarea id="deliveryNotes" class="form-input form-textarea" placeholder="Например: код домофона, удобное время доставки, этаж без лифта..."></textarea>
+                    <i class="fas fa-comment input-icon"></i>
+                </div>
+            </div>
+
+            <!-- Неоновая линия -->
+            <div class="neon-line"></div>
+
+            <!-- Шаг 3: Способ оплаты -->
+            <div class="form-section" id="paymentSection">
+                <div class="section-header">
+                    <div class="section-icon">
+                        <i class="fas fa-credit-card"></i>
+                    </div>
+                    <div>
+                        <h2 class="section-title">Способ оплаты</h2>
+                        <p class="section-subtitle">Выберите удобный способ оплаты</p>
+                    </div>
+                </div>
+
+                <div class="payment-methods">
+                    <div class="payment-method selected" data-method="card">
+                        <div class="payment-icon">
+                            <i class="fas fa-credit-card"></i>
+                        </div>
+                        <div class="payment-info">
+                            <h4>Банковская карта</h4>
+                            <p>Visa, Mastercard, МИР</p>
+                        </div>
+                    </div>
+                    
+                    <div class="payment-method" data-method="cash">
+                        <div class="payment-icon">
+                            <i class="fas fa-money-bill-wave"></i>
+                        </div>
+                        <div class="payment-info">
+                            <h4>Наличными</h4>
+                            <p>При получении</p>
+                        </div>
+                    </div>
+                    
+                    <div class="payment-method" data-method="qr">
+                        <div class="payment-icon">
+                            <i class="fab fa-qr"></i>
+                        </div>
+                        <div class="payment-info">
+                            <h4>QR-код</h4>
+                            <p>Мгновенная оплата</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Поле для примечаний -->
+                <div class="form-group" style="margin-top: 30px;">
+                    <label>Примечания к заказу</label>
+                    <textarea id="customerNotes" class="form-input form-textarea" placeholder="Особые пожелания, время доставки и т.д."></textarea>
+                    <i class="fas fa-comment input-icon"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Боковая панель с заказом -->
+        <aside class="order-summary fade-in">
+            <div class="order-header">
+                <h3><i class="fas fa-shopping-bag"></i> Ваш заказ</h3>
+                <p id="orderSummaryText">0 товаров на сумму 0 ₽</p>
+            </div>
+
+            <div class="order-items" id="orderItemsContainer">
+                <!-- Товары будут загружены через JavaScript -->
+                <div class="empty-cart">
+                    <i class="fas fa-shopping-cart" style="font-size: 3rem; margin-bottom: 20px; color: var(--neon-blue);"></i>
+                    <p>Загрузка товаров...</p>
+                </div>
+            </div>
+
+            <div class="order-totals">
+                <div class="total-row">
+                    <span>Товары (<span id="itemsCount">0</span> шт.)</span>
+                    <span id="subtotalAmount">0 ₽</span>
+                </div>
+                <div class="total-row">
+                    <span>Доставка</span>
+                    <span style="color: var(--neon-green);">Бесплатно</span>
+                </div>
+                <div class="total-row">
+                    <span>Скидка</span>
+                    <span id="discountAmount" style="color: var(--neon-pink);">-0 ₽</span>
+                </div>
+                <div class="total-row final">
+                    <span>Итого к оплате</span>
+                    <span class="value" id="totalAmount">0 ₽</span>
+                </div>
+            </div>
+
+            <div class="promo-code">
+                <div class="promo-input">
+                    <input type="text" id="promoCodeInput" placeholder="Введите промокод">
+                    <button class="apply-promo-btn" id="applyPromoBtn">Применить</button>
+                </div>
+            </div>
+
+            <div class="agreement-checkbox">
+                <input type="checkbox" id="termsAgreement" required>
+                <label for="termsAgreement">
+                    Я согласен с <a href="#">условиями покупки</a> и обработки персональных данных. 
+                    Подтверждаю, что ознакомлен с <a href="#">правилами возврата</a>.
+                </label>
+            </div>
+
+            <button class="confirm-order-btn" id="confirmOrderBtn">
+                <i class="fas fa-lock"></i> Подтвердить заказ
+            </button>
+
+            <div class="payment-security">
+                <i class="fas fa-shield-alt"></i>
+                <span>Безопасная оплата через SSL-шифрование</span>
+            </div>
+        </aside>
+
+        <!-- Футер -->
+        <div class="checkout-footer fade-in">
+            <p>© 2024 VinylNeon. Все права защищены.</p>
+            <p style="margin-top: 10px; font-size: 0.8rem; opacity: 0.7;">
+                Вопросы? Звоните: 8 (800) 123-45-67 или пишите на support@vinylneon.ru
+            </p>
+        </div>
+    </main>
+
+<script>
+// Константы API (исправленные пути)
+const CART_API = '/api/user/cart.php';
+const ADDRESS_API = '/api/user/addresses.php';
+const USER_INFO_API = '/api/user/profile.php';
+const CREATE_ORDER_API = '/api/user/orders.php';
+
+// Переменные состояния
+let cartItems = [];
+let addresses = [];
+let userInfo = {};
+let selectedAddressId = null;
+let discountAmount = 0;
+
+// Получение токена
+function getAuthToken() {
+    return localStorage.getItem('vinylneon_token');
+}
+
+// Показ уведомления для неавторизованных
+function updateAuthNotification() {
+    const token = getAuthToken();
+    const authNotification = document.getElementById('authNotification');
+    if (!token && authNotification) {
+        authNotification.style.display = 'flex';
+    } else if (authNotification) {
+        authNotification.style.display = 'none';
+    }
+}
+
+// Инициализация
+async function initializeCheckout() {
+    console.log('Инициализация...');
+    const token = getAuthToken();
+    console.log('Токен:', token ? 'Присутствует' : 'Отсутствует');
+    try {
+        await Promise.all([
+            loadUserInfo(),
+            loadCartItems(),
+            loadDeliveryAddresses()
+        ]);
+        setupEventListeners();
+        updateAuthNotification();
+    } catch (error) {
+        console.error('Ошибка инициализации:', error);
+        showNotification('Ошибка загрузки данных. Обновите страницу.', 'error');
+    }
+}
+
+// Загрузка профиля
+async function loadUserInfo() {
+    try {
+        const token = getAuthToken();
+        if (!token) {
+            userInfo = {};
+            renderContactForm();
+            return;
+        }
+        const response = await fetch(USER_INFO_API, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await response.json();
+        userInfo = data.success && data.user ? data.user : {};
+        renderContactForm();
+    } catch (error) {
+        console.error('Ошибка загрузки профиля:', error);
+        userInfo = {};
+        renderContactForm();
+    }
+}
+
+// Отображение контактной формы
+function renderContactForm() {
+    const formGrid = document.getElementById('contactFormGrid');
+    if (!formGrid) return;
+    const firstName = userInfo.first_name || '';
+    const lastName = userInfo.last_name || '';
+    const email = userInfo.email || '';
+    const phone = userInfo.phone || '';
+    formGrid.innerHTML = `
+        <div class="form-group">
+            <label>Имя <span class="required">*</span></label>
+            <input type="text" id="firstName" class="form-input" value="${firstName}" placeholder="Иван" required>
+            <i class="fas fa-user input-icon"></i>
+        </div>
+        <div class="form-group">
+            <label>Фамилия <span class="required">*</span></label>
+            <input type="text" id="lastName" class="form-input" value="${lastName}" placeholder="Иванов" required>
+            <i class="fas fa-user input-icon"></i>
+        </div>
+        <div class="form-group">
+            <label>Email <span class="required">*</span></label>
+            <input type="email" id="userEmail" class="form-input" value="${email}" placeholder="ivan@example.com" required>
+            <i class="fas fa-envelope input-icon"></i>
+        </div>
+        <div class="form-group">
+            <label>Телефон <span class="required">*</span></label>
+            <input type="tel" id="userPhone" class="form-input" value="${phone}" placeholder="+7 (999) 123-45-67" required>
+            <i class="fas fa-phone input-icon"></i>
+        </div>
+    `;
+}
+
+// Загрузка корзины
+async function loadCartItems() {
+    try {
+        const token = getAuthToken();
+        if (!token) {
+            cartItems = [];
+            renderCartItems();
+            updateOrderSummary();
+            return;
+        }
+        const response = await fetch(CART_API, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await response.json();
+        if (data.success) {
+            cartItems = data.cart || [];
+        } else {
+            cartItems = [];
+        }
+        renderCartItems();
+        updateOrderSummary();
+    } catch (error) {
+        console.error('Ошибка загрузки корзины:', error);
+        cartItems = [];
+        renderCartItems();
+        updateOrderSummary();
+    }
+}
+
+// Отображение товаров
+function renderCartItems() {
+    const container = document.getElementById('orderItemsContainer');
+    if (!container) return;
+    if (!cartItems.length) {
+        container.innerHTML = `
+            <div class="empty-cart">
+                <i class="fas fa-shopping-cart" style="font-size: 3rem; margin-bottom: 20px; color: var(--neon-blue);"></i>
+                <p>Ваша корзина пуста</p>
+                <a href="index.html" class="btn">Перейти в магазин</a>
+            </div>
+        `;
+        return;
+    }
+    container.innerHTML = '';
+    cartItems.forEach(item => {
+        const price = parseFloat(item.product_price) || 0;
+        const qty = parseInt(item.quantity) || 1;
+        const subtotal = (price * qty).toFixed(2);
+        const div = document.createElement('div');
+        div.className = 'order-item';
+        div.innerHTML = `
+            <div class="order-item-image">
+                <img src="${item.product_image || 'https://images.unsplash.com/photo-1511379938547-c1f69419868d'}" alt="${item.product_title}">
+            </div>
+            <div class="order-item-info">
+                <div class="order-item-title">${item.product_title}</div>
+                <div class="order-item-artist">${item.artist || ''}</div>
+                <div class="order-item-details">
+                    <span class="order-item-price">${price.toLocaleString('ru-RU')} ₽ × ${qty}</span>
+                </div>
+            </div>
+            <div class="order-item-total">${parseFloat(subtotal).toLocaleString('ru-RU')} ₽</div>
+        `;
+        container.appendChild(div);
+    });
+}
+
+// Обновление итогов
+function updateOrderSummary() {
+    const subtotal = cartItems.reduce((s, i) => s + parseFloat(i.product_price) * parseInt(i.quantity), 0);
+    const total = subtotal - discountAmount;
+    document.getElementById('itemsCount').textContent = cartItems.length;
+    document.getElementById('subtotalAmount').textContent = `${subtotal.toLocaleString('ru-RU')} ₽`;
+    document.getElementById('discountAmount').textContent = `-${discountAmount.toLocaleString('ru-RU')} ₽`;
+    document.getElementById('totalAmount').textContent = `${total.toLocaleString('ru-RU')} ₽`;
+    document.getElementById('orderSummaryText').textContent = 
+        `${cartItems.length} ${getWordForm(cartItems.length, ['товар', 'товара', 'товаров'])} на сумму ${subtotal.toLocaleString('ru-RU')} ₽`;
+}
+
+function getWordForm(n, forms) {
+    n = Math.abs(n) % 100;
+    const n1 = n % 10;
+    if (n > 10 && n < 20) return forms[2];
+    if (n1 > 1 && n1 < 5) return forms[1];
+    if (n1 === 1) return forms[0];
+    return forms[2];
+}
+
+// Загрузка адресов
+async function loadDeliveryAddresses() {
+    try {
+        const token = getAuthToken();
+        if (!token) {
+            addresses = [];
+            renderDeliveryAddresses();
+            return;
+        }
+        const response = await fetch(ADDRESS_API, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await response.json();
+        addresses = data.success ? (data.addresses || []) : [];
+        renderDeliveryAddresses();
+    } catch (error) {
+        console.error('Ошибка загрузки адресов:', error);
+        addresses = [];
+        renderDeliveryAddresses();
+    }
+}
+
+// Отображение адресов
+function renderDeliveryAddresses() {
+    const container = document.getElementById('addressOptionsContainer');
+    if (!container) return;
+    // Сохраняем кнопку добавления
+    const newBtn = document.querySelector('.new-address-btn');
+    container.innerHTML = '';
+    if (newBtn) container.appendChild(newBtn);
+    else {
+        const btn = document.createElement('div');
+        btn.className = 'new-address-btn';
+        btn.innerHTML = `
+            <i class="fas fa-plus-circle"></i>
+            <div class="address-title">Добавить новый адрес</div>
+            <div class="address-details">Нажмите для указания нового адреса</div>
+        `;
+        container.appendChild(btn);
+    }
+    const token = getAuthToken();
+    if (!token || !addresses.length) {
+        const msg = document.createElement('div');
+        msg.className = 'no-addresses-message';
+        msg.innerHTML = '<p>У вас нет сохранённых адресов. Добавьте новый адрес.</p>';
+        container.insertBefore(msg, container.firstChild);
+        return;
+    }
+    addresses.forEach(addr => {
+        const opt = document.createElement('div');
+        opt.className = `address-option ${addr.is_default ? 'selected' : ''}`;
+        opt.dataset.addressId = addr.id;
+        const icon = addr.is_office ? 'briefcase' : 'home';
+        const title = addr.title || (addr.is_office ? 'Работа' : 'Дом');
+        opt.innerHTML = `
+            <div class="address-icon"><i class="fas fa-${icon}"></i></div>
+            <div class="address-title">${title}</div>
+            <div class="address-details">${formatAddress(addr)}</div>
+            ${addr.is_default ? '<span class="default-badge">По умолчанию</span>' : ''}
+        `;
+        opt.addEventListener('click', () => {
+            document.querySelectorAll('.address-option').forEach(o => o.classList.remove('selected'));
+            opt.classList.add('selected');
+            selectedAddressId = addr.id;
+        });
+        container.insertBefore(opt, document.querySelector('.new-address-btn'));
+        if (addr.is_default) selectedAddressId = addr.id;
+    });
+}
+
+// Форматирование адреса
+function formatAddress(addr) {
+    const parts = [];
+    if (addr.city) parts.push(`г. ${addr.city}`);
+    if (addr.street) parts.push(`ул. ${addr.street}`);
+    if (addr.house) parts.push(`д. ${addr.house}`);
+    if (addr.building) parts.push(`корп. ${addr.building}`);
+    if (addr.entrance) parts.push(`подъезд ${addr.entrance}`);
+    if (addr.floor) parts.push(`этаж ${addr.floor}`);
+    if (addr.apartment) parts.push(`кв. ${addr.apartment}`);
+    return parts.join(', ') || 'Адрес не указан';
+}
+
+// Применение промокода
+function applyPromoCode() {
+    const input = document.getElementById('promoCodeInput');
+    const code = input.value.trim();
+    if (!code) return showNotification('Введите промокод', 'info');
+    if (code === 'NEON2024') {
+        discountAmount = 500;
+        showNotification('Промокод "NEON2024" применён! Скидка 500₽', 'success');
+        input.value = '';
+        updateOrderSummary();
+    } else if (code === 'WELCOME10') {
+        const subtotal = cartItems.reduce((s, i) => s + parseFloat(i.product_price) * parseInt(i.quantity), 0);
+        discountAmount = Math.round(subtotal * 0.1);
+        showNotification('Промокод "WELCOME10" применён! Скидка 10%', 'success');
+        input.value = '';
+        updateOrderSummary();
+    } else {
+        showNotification('Промокод недействителен', 'error');
+    }
+}
+
+// Создание заказа
+async function createOrder() {
+    if (!cartItems.length) return showNotification('Корзина пуста', 'error');
+    const token = getAuthToken();
+    if (!token) {
+        showNotification('Необходимо войти в систему', 'error');
+        if (confirm('Перейти на страницу входа?')) {
+            window.location.href = 'index.html?login=true&redirect=checkout.html';
+        }
+        return;
+    }
+    if (addresses.length && !selectedAddressId) return showNotification('Выберите адрес доставки', 'error');
+    const payment = document.querySelector('.payment-method.selected');
+    if (!payment) return showNotification('Выберите способ оплаты', 'error');
+    if (!document.getElementById('termsAgreement').checked) return showNotification('Примите условия покупки', 'error');
+    if (!validateContactForm()) return showNotification('Заполните все обязательные поля', 'error');
+
+    await updateUserProfile();
+
+    const orderData = {
+        address_id: selectedAddressId,
+        payment_method: payment.dataset.method,
+        notes: document.getElementById('customerNotes')?.value || '',
+        delivery_notes: document.getElementById('deliveryNotes')?.value || ''
+    };
+
+    if (!selectedAddressId && !addresses.length) {
+        const city = prompt('Город доставки:', 'Калининград') || '';
+        const street = prompt('Улица:', '') || '';
+        const house = prompt('Дом:', '') || '';
+        const apartment = prompt('Квартира:', '') || '';
+        if (!city || !street || !house) return showNotification('Необходимо заполнить адрес', 'error');
+        orderData.address = {
+            full_name: document.getElementById('firstName').value + ' ' + document.getElementById('lastName').value,
+            phone: document.getElementById('userPhone').value,
+            city, street, house, apartment
+        };
+    }
+
+    const btn = document.getElementById('confirmOrderBtn');
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Оформляем...';
+    btn.disabled = true;
+
+    try {
+        const response = await fetch(CREATE_ORDER_API, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(orderData)
+        });
+        const data = await response.json();
+        if (data.success) {
+            showNotification(`Заказ #${data.order_number} успешно оформлен!`, 'success');
+            setTimeout(() => {
+                window.location.href = `user.html#orders?order_success=1&order_number=${data.order_number}`;
+            }, 2000);
+        } else {
+            throw new Error(data.message || 'Ошибка создания заказа');
+        }
+    } catch (error) {
+        showNotification(error.message, 'error');
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+    }
+}
+
+// Обновление профиля (заглушка)
+async function updateUserProfile() {
+    const token = getAuthToken();
+    if (!token) return true;
+    // Здесь можно отправить данные на сервер, если есть API
+    return true;
+}
+
+// Валидация контактной формы
+function validateContactForm() {
+    const fields = [
+        document.getElementById('firstName'),
+        document.getElementById('lastName'),
+        document.getElementById('userEmail'),
+        document.getElementById('userPhone')
+    ];
+    let valid = true;
+    fields.forEach(f => {
+        if (!f || !f.value.trim()) {
+            valid = false;
+            if (f) f.style.borderColor = 'var(--neon-pink)';
+        } else if (f) f.style.borderColor = '';
+    });
+    const email = document.getElementById('userEmail');
+    if (email && email.value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)) {
+        valid = false;
+        email.style.borderColor = 'var(--neon-pink)';
+    }
+    return valid;
+}
+
+// Уведомления
+function showNotification(msg, type = 'info') {
+    const old = document.querySelector('.checkout-notification');
+    if (old) old.remove();
+    const notif = document.createElement('div');
+    notif.className = 'checkout-notification';
+    notif.style.cssText = `
+        position: fixed; top: 100px; right: 20px; background: ${type === 'success' ? 'var(--neon-green)' : type === 'error' ? 'var(--neon-pink)' : 'var(--neon-blue)'};
+        color: ${type === 'success' ? '#000' : 'white'}; padding: 15px 20px; border-radius: 12px; font-weight: 600; z-index: 10000;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3); animation: slideIn 0.3s ease; display: flex; align-items: center; gap: 12px; max-width: 400px;
+    `;
+    const icon = type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle';
+    notif.innerHTML = `<i class="fas ${icon}" style="font-size:1.2rem;"></i><span>${msg}</span>`;
+    document.body.appendChild(notif);
+    setTimeout(() => {
+        notif.style.animation = 'slideOut 0.3s ease';
+        setTimeout(() => notif.remove(), 300);
+    }, 4000);
+}
+
+// Настройка обработчиков
+function setupEventListeners() {
+    document.querySelectorAll('.payment-method').forEach(m => {
+        m.addEventListener('click', function() {
+            document.querySelectorAll('.payment-method').forEach(x => x.classList.remove('selected'));
+            this.classList.add('selected');
+        });
+    });
+    document.getElementById('applyPromoBtn')?.addEventListener('click', applyPromoCode);
+    document.getElementById('promoCodeInput')?.addEventListener('keypress', e => e.key === 'Enter' && applyPromoCode());
+    document.getElementById('confirmOrderBtn')?.addEventListener('click', e => { e.preventDefault(); createOrder(); });
+    document.querySelector('.new-address-btn')?.addEventListener('click', () => {
+        if (!getAuthToken()) {
+            showNotification('Для добавления адреса войдите в систему', 'error');
+            return;
+        }
+        window.location.href = 'user.html#addresses';
+    });
+}
+
+// Запуск
+document.addEventListener('DOMContentLoaded', initializeCheckout);
+</script>
+</body>
+</html>

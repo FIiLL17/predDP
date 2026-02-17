@@ -339,38 +339,76 @@ function showNoAddresses(container, message) {
 
 // Загрузка заказов
 async function loadUserOrders() {
-    console.log('Загрузка заказов...');
-    
     const token = getAuthToken();
     if (!token) {
-        console.log('Токен не найден');
+        console.log('Нет токена');
         return;
     }
-    
-    const ordersTbody = document.getElementById('ordersTbody');
-    if (!ordersTbody) return;
-    
+
     try {
-        const response = await fetch(`${API_BASE}/orders.php?token=${encodeURIComponent(token)}`);
-        
-        if (response.ok) {
-            const data = await response.json();
-            console.log('Заказы:', data);
-            
-            if (data.success && data.orders && data.orders.length > 0) {
-                renderOrdersTable(data.orders, ordersTbody);
-                updateElementText('ordersCount', data.orders.length);
-                updateElementText('totalOrders', data.orders.length);
-            } else {
-                showNoOrders(ordersTbody, data.message || 'Нет заказов');
+        const response = await fetch('/api/user/orders.php', {
+            headers: {
+                'Authorization': `Bearer ${token}`
             }
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            renderOrders(data.orders);
         } else {
-            showNoOrders(ordersTbody, 'Ошибка загрузки');
+            console.error('Ошибка загрузки заказов:', data.message);
         }
     } catch (error) {
-        console.error('Ошибка загрузки заказов:', error);
-        showNoOrders(ordersTbody, 'Ошибка соединения');
+        console.error('Ошибка запроса заказов:', error);
     }
+}
+
+function renderOrders(orders) {
+    const tbody = document.getElementById('ordersTbody');
+    if (!tbody) return;
+
+    if (!orders || orders.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">У вас пока нет заказов</td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = orders.map(order => {
+        const statusClass = getStatusClass(order.status);
+        return `
+            <tr>
+                <td>${order.order_number}</td>
+                <td>${new Date(order.created_at).toLocaleDateString('ru-RU')}</td>
+                <td>${Number(order.total_amount).toLocaleString('ru-RU')} ₽</td>
+                <td><span class="order-status ${statusClass}">${getStatusText(order.status)}</span></td>
+                <td>
+                    <button class="btn-small" onclick="viewOrderDetails(${order.id})">Детали</button>
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
+function getStatusClass(status) {
+    const map = {
+        'pending': 'status-pending',
+        'processing': 'status-processing',
+        'shipped': 'status-shipped',
+        'completed': 'status-completed',
+        'cancelled': 'status-cancelled'
+    };
+    return map[status] || 'status-pending';
+}
+
+function getStatusText(status) {
+    const map = {
+        'pending': 'В обработке',
+        'processing': 'Готовится',
+        'shipped': 'Отправлен',
+        'completed': 'Выполнен',
+        'cancelled': 'Отменён'
+    };
+    return map[status] || status;
 }
 
 function renderOrdersTable(orders, container) {
@@ -1267,6 +1305,22 @@ async function initUserPage() {
     
     // Проверяем авторизацию
     if (!checkAuth()) return;
+
+    // ========== ОБРАБОТКА ХЕША ==========
+    const hash = window.location.hash.substring(1);
+    if (hash) {
+        const targetLink = document.querySelector(`.nav-link[data-section="${hash}"]`);
+        if (targetLink) {
+            // Убираем active со всех ссылок и секций
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+            
+            // Активируем нужную ссылку и секцию
+            targetLink.classList.add('active');
+            const targetSection = document.getElementById(hash);
+            if (targetSection) targetSection.classList.add('active');
+        }
+    }
     
     // Инициализируем компоненты
     initTabNavigation();
@@ -1276,7 +1330,7 @@ async function initUserPage() {
     await updateUserProfileFromAPI();
     await initAdminPanelFromAPI();
     
-    // Загружаем данные для активной вкладка
+    // Загружаем данные для активной вкладки
     const activeSection = document.querySelector('.content-section.active');
     if (activeSection) {
         const sectionId = activeSection.id;
@@ -1285,6 +1339,19 @@ async function initUserPage() {
             if (sectionId === 'favorites') loadUserFavorites();
             if (sectionId === 'addresses') loadUserAddresses();
         }, 100);
+    }
+    
+    // ========== ОБРАБОТКА ПАРАМЕТРА order_success ==========
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('order_success')) {
+        const orderNumber = urlParams.get('order_number');
+        // Показываем уведомление
+        setTimeout(() => {
+            alert(`Заказ #${orderNumber} успешно оформлен!`);
+            // Очищаем URL от параметров
+            const newUrl = window.location.pathname + window.location.hash;
+            history.replaceState(null, '', newUrl);
+        }, 500);
     }
     
     console.log('=== СТРАНИЦА ПРОФИЛЯ УСПЕШНО ИНИЦИАЛИЗИРОВАНА ===');

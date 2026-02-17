@@ -291,32 +291,34 @@
 }</style>
 
     <!-- Модальное окно корзины -->
-    <div class="cart-modal" id="cartModal">
-        <div class="modal-content neon-modal cart-modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title neon-text">КОРЗИНА</h2>
-                <button class="close-modal">&times;</button>
-            </div>
-            <div class="cart-body" id="cartBody">
-                <!-- Контент корзины будет загружен динамически -->
-                <div class="empty-cart">
-                    <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#ff00ff">
-                        <circle cx="9" cy="21" r="1"/>
-                        <circle cx="20" cy="21" r="1"/>
-                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
-                    </svg>
-                    <p>Корзина пуста</p>
-                </div>
-            </div>
-            <div class="cart-footer">
-                <div class="cart-total">
-                    <span>Итого:</span>
-                    <span class="total-price neon-text" id="cartTotal">0 ₽</span>
-                </div>
-                <button class="neon-submit-btn checkout-btn" id="checkoutBtn">ОФОРМИТЬ ЗАКАЗ</button>
+<div class="cart-modal" id="cartModal">
+    <div class="modal-content neon-modal cart-modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title neon-text">КОРЗИНА</h2>
+            <button class="close-modal">&times;</button>
+        </div>
+        <div class="cart-body" id="cartBody">
+            <!-- Контент будет загружен динамически -->
+            <div class="empty-cart" id="emptyCartMessage">
+                <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#ff00ff">
+                    <circle cx="9" cy="21" r="1"/>
+                    <circle cx="20" cy="21" r="1"/>
+                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+                </svg>
+                <p>Корзина пуста</p>
             </div>
         </div>
+<div class="cart-footer" id="cartFooter" style="display: none;">
+    <div class="cart-total">
+        <span>Итого:</span>
+        <span class="total-price neon-text" id="cartTotal">0 ₽</span>
     </div>
+    <button class="neon-submit-btn" style="width: 100%; margin-top: 15px;" id="checkoutBtn">
+        <i class="fas fa-lock"></i> ОФОРМИТЬ ЗАКАЗ
+    </button>
+</div>
+    </div>
+</div>
 
     <!-- Модальное окно избранного -->
     <div class="favorites-modal" id="favoritesModal">
@@ -537,6 +539,19 @@
     to { transform: rotate(360deg); }
 }
 </style>
+
+<script>
+
+document.addEventListener('click', function(e) {
+      
+    if (e.target.closest('.neon-submit-btn') && 
+        e.target.closest('.neon-submit-btn').textContent.includes('ОФОРМИТЬ ЗАКАЗ')) {
+         e.preventDefault();
+        e.stopPropagation();
+        window.location.href = 'checkout.html';
+     }
+ });
+</script>
 <script src="js/auth-manager.js"></script>  
 <script src="js/auth-fixed.js"></script>
 <!-- <script src="js/auth-simple.js"></script> -->
