@@ -2,8 +2,8 @@
 class Database {
     private $host = "localhost";
     private $db_name = "vinylneon_db";
-    private $username = "root"; // измените на ваше имя пользователя
-    private $password = ""; // измените на ваш пароль
+    private $username = "root";
+    private $password = "";
     public $conn;
     
     public function getConnection() {
