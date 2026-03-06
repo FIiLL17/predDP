@@ -943,7 +943,8 @@ async function removeFromCartDetails(productId) {
 
 function checkoutFromDetails() {
     closeModal('detailsModal');
-    openModal('cartModal');
+    window.location.href = 'checkout.html';
+    window.checkoutFromDetails = checkoutFromDetails;
 }
 
 // Добавьте обработчики кликов на иконки в header

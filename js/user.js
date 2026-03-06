@@ -77,8 +77,8 @@ async function checkAdminRoleFromAPI() {
 async function initAdminPanelFromAPI() {
     console.log('Инициализация админ-панели...');
     
-    const adminNavItem = document.getElementById('adminNavItem');
-    const adminPanelLink = document.getElementById('adminPanelLink');
+const adminNavItem = document.getElementById('adminNavItem');
+const adminPanelLink = document.getElementById('adminPanelLink');
     
     if (!adminNavItem || !adminPanelLink) {
         console.log('Элементы админ-панели не найдены');
@@ -105,7 +105,12 @@ async function initAdminPanelFromAPI() {
 // Открытие админ-панели
 function openAdminPanel() {
     console.log('Открытие админ-панели...');
-    window.open('admin.html', '_blank');
+    const token = getAuthToken();
+    if (!token) {
+        alert('Ошибка авторизации');
+        return;
+    }
+    window.open('api/admin/admin.php?token=' + encodeURIComponent(token), '_blank');
 }
 
 // Обновление данных пользователя на странице
@@ -1288,21 +1293,21 @@ async function saveProfileChanges(e) {
         
         if (data.success) {
             closeEditProfileModal();
-            await updateUserProfileFromAPI();
+            await updateUserProfileFromAPI(); // обновляем данные на странице
             alert('Профиль успешно обновлен!');
         } else {
             alert(data.message || 'Ошибка обновления');
         }
     } catch (error) {
         console.error('Ошибка сохранения:', error);
-        alert('Ошибка соединения');
+        alert('Ошибка соединения с сервером');
     }
 }
 
 // Основная инициализация
 async function initUserPage() {
     console.log('=== ИНИЦИАЛИЗАЦИЯ СТРАНИЦЫ ПРОФИЛЯ ===');
-    
+    document.getElementById('editProfileForm').addEventListener('submit', saveProfileChanges);
     // Проверяем авторизацию
     if (!checkAuth()) return;
 
