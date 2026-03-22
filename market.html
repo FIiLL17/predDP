@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Neon Vinyl — Магазин</title>
+  <link rel="stylesheet" href="css/market.css">
+</head>
+<body>
+  <!-- Звёздное небо и частицы -->
+  <div class="stars" id="stars"></div>
+  <div class="particles" id="particles"></div>
+
+  <!-- Индикатор фильтрации -->
+  <div class="filter-status" id="filterStatus"></div>
+
+  <!-- Уведомления -->
+  <div class="notification-container" id="notificationContainer"></div>
+
+  <!-- ==================== ШАПКА (как на главной) ==================== -->
+  <header class="site-header neon-header">
+    <!-- Верхняя панель (город, телефон) – можно оставить или убрать, для полноты оставим -->
+      <div class="container">
+        
+        </div>
+      </div>
+    </div>
+
+    <!-- Основная навигация -->
+    <div class="header-main neon-main">
+      <div class="container">
+        <!-- Логотип -->
+        <div class="header-logo">
+          <a href="#" class="logo-link neon-logo">
+            <span class="logo-text">Vinyl<span class="logo-highlight neon-glow">Neon</span></span>
+          </a>
+        </div>
+
+        <!-- Навигационное меню -->
+        <nav class="header-nav neon-nav">
+          <ul class="nav-list neon-nav-list">
+            <li class="nav-item neon-nav-item">
+              <a href="index.html" class="nav-link neon-nav-link">
+                <span class="nav-icon">🎵</span>
+                Главная
+              </a>
+            </li>
+            <li class="nav-item neon-nav-item">
+              <a href="#" class="nav-link neon-nav-link active">
+                <span class="nav-icon">🛒</span>
+                Магазин
+                <span class="new-badge neon-badge">New</span>
+              </a>
+            </li>
+            <li class="nav-item neon-nav-item">
+              <a href="news.html" class="nav-link neon-nav-link">
+                <span class="nav-icon">📻</span>
+                Новости
+              </a>
+            </li>
+            <li class="nav-item neon-nav-item">
+              <a href="contacts.html" class="nav-link neon-nav-link">
+                <span class="nav-icon">📍</span>
+                Контакты
+              </a>
+            </li>
+          </ul>
+        </nav>
+
+        <!-- Правая часть с действиями -->
+        <div class="header-actions neon-actions">
+          <!-- Кнопка поиска (можно оставить для красоты) -->
+          <button class="search-btn neon-btn" aria-label="Поиск" id="searchToggle">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ff00ff">
+              <circle cx="11" cy="11" r="8"/>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+          </button>
+          <!-- Поле поиска (скрыто) -->
+          <div class="search-box" id="searchBox">
+            <input type="text" placeholder="Поиск пластинок..." class="search-input neon-input">
+            <button class="search-submit neon-btn">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00ff9d">
+                <circle cx="11" cy="11" r="8"/>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+              </svg>
+            </button>
+          </div>
+
+          <!-- Корзина -->
+          <a href="#" class="cart-btn neon-btn" aria-label="Корзина" id="cartBtn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00ff9d">
+              <circle cx="9" cy="21" r="1"/>
+              <circle cx="20" cy="21" r="1"/>
+              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+            </svg>
+            <span class="cart-count neon-count" id="cartCount">0</span>
+          </a>
+
+          <!-- Избранное -->
+          <button class="favorite-btn neon-btn" aria-label="Избранное" id="favoritesBtn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ff00ff">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+            </svg>
+            <span class="favorite-count neon-count" id="favoriteCount">0</span>
+          </button>
+
+          <!-- Пользовательское меню -->
+          <div class="user-section">
+            <button class="user-btn neon-btn" id="header-button">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00b3ff">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+              </svg>
+              <span id="auth-text">Войти</span>
+            </button>
+            <!-- Выпадающее меню пользователя (скрыто) -->
+            <div class="user-dropdown" id="userDropdown" style="display: none;">
+              <div class="user-dropdown-header">
+                <div class="user-avatar" id="userAvatar">U</div>
+                <div class="user-info">
+                  <div class="username" id="dropdownUsername">Гость</div>
+                  <div class="user-email" id="dropdownEmail">Не авторизован</div>
+                </div>
+              </div>
+              <div class="dropdown-divider"></div>
+              <a href="user.html" class="dropdown-item" onclick="event.preventDefault(); authManager.redirectToProfile()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                  <circle cx="12" cy="7" r="4"/>
+                </svg>
+                Профиль
+              </a>
+<a href="user.html#orders" class="dropdown-item">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+        <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+        <line x1="3" y1="6" x2="21" y2="6"/>
+        <path d="M16 10a4 4 0 0 1-8 0"/>
+    </svg>
+    Заказы
+    <span class="badge" id="ordersCountBadge" style="display: none;">0</span>
+</a>
+              <a href="favorites.php" class="dropdown-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                </svg>
+                Избранное
+                <span class="badge" id="favoritesCount">0</span>
+              </a>
+              <div class="dropdown-divider"></div>
+              <button class="dropdown-item logout-btn" id="logoutBtn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                  <polyline points="16 17 21 12 16 7"/>
+                  <line x1="21" y1="12" x2="9" y2="12"/>
+                </svg>
+                Выйти
+              </button>
+            </div>
+          </div>
+
+          <!-- Кнопка мобильного меню -->
+
+      </div>
+    </div>
+  </header>
+
+  <!-- ==================== МОДАЛЬНЫЕ ОКНА ==================== -->
+  <!-- Вход -->
+  <div class="auth-modal" id="loginModal">
+    <div class="modal-content neon-modal">
+      <div class="modal-header">
+        <h2 class="modal-title neon-text">ВОЙТИ В АККАУНТ</h2>
+        <button class="close-modal">&times;</button>
+      </div>
+      <form id="loginForm" class="auth-form">
+        <div class="form-group">
+          <input type="text" name="username" placeholder="Имя пользователя или Email" required class="neon-input">
+          <div class="input-glow"></div>
+        </div>
+        <div class="form-group">
+          <input type="password" name="password" placeholder="Пароль" required class="neon-input">
+          <div class="input-glow"></div>
+        </div>
+        <div class="form-options">
+          <label class="checkbox-label">
+            <input type="checkbox" name="remember">
+            <span class="checkmark"></span>
+            Запомнить меня
+          </label>
+          <a href="#" class="forgot-password neon-link">Забыли пароль?</a>
+        </div>
+        <button type="submit" class="neon-submit-btn">
+          <span class="btn-text">ВОЙТИ</span>
+          <span class="btn-loader"></span>
+        </button>
+        <div class="form-footer">
+          <p>Нет аккаунта? <a href="#" class="switch-to-register neon-link">Зарегистрироваться</a></p>
+        </div>
+      </form>
+      <div id="loginMessage" class="message"></div>
+    </div>
+  </div>
+
+  <!-- Регистрация -->
+  <div class="auth-modal" id="registerModal">
+    <div class="modal-content neon-modal">
+      <div class="modal-header">
+        <h2 class="modal-title neon-text">РЕГИСТРАЦИЯ</h2>
+        <button class="close-modal">&times;</button>
+      </div>
+      <form id="registerForm" class="auth-form">
+        <div class="form-group">
+          <input type="text" name="username" placeholder="Имя пользователя" required class="neon-input" minlength="3" maxlength="50">
+          <div class="input-glow"></div>
+        </div>
+        <div class="form-group">
+          <input type="email" name="email" placeholder="Email" required class="neon-input">
+          <div class="input-glow"></div>
+        </div>
+        <div class="form-group">
+          <input type="password" name="password" placeholder="Пароль" required class="neon-input" minlength="6">
+          <div class="input-glow"></div>
+        </div>
+        <div class="form-group">
+          <input type="password" name="confirm_password" placeholder="Подтвердите пароль" required class="neon-input">
+          <div class="input-glow"></div>
+        </div>
+        <div class="form-options">
+          <label class="checkbox-label">
+            <input type="checkbox" name="agree_terms" required>
+            <span class="checkmark"></span>
+            Я согласен с <a href="#" class="neon-link">правилами</a>
+          </label>
+        </div>
+        <button type="submit" class="neon-submit-btn">
+          <span class="btn-text">СОЗДАТЬ АККАУНТ</span>
+          <span class="btn-loader"></span>
+        </button>
+        <div class="form-footer">
+          <p>Уже есть аккаунт? <a href="#" class="switch-to-login neon-link">Войти</a></p>
+        </div>
+      </form>
+      <div id="registerMessage" class="message"></div>
+    </div>
+  </div>
+
+ <!-- Модальное окно для избранного и корзины (как на главной) -->
+<div class="details-modal" id="detailsModal">
+    <div class="modal-content neon-modal details-modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title neon-text" id="detailsTitle">ДЕТАЛИ</h2>
+            <button class="close-modal">&times;</button>
+        </div>
+        <div class="details-body" id="detailsBody">
+            <!-- Контент будет загружен динамически -->
+            <div class="loading-spinner">
+                <div class="spinner"></div>
+                <p>Загрузка...</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+  <!-- Восстановление пароля -->
+  <div class="auth-modal" id="forgotPasswordModal">
+    <div class="modal-content neon-modal">
+      <div class="modal-header">
+        <h2 class="modal-title neon-text">ВОССТАНОВЛЕНИЕ ПАРОЛЯ</h2>
+        <button class="close-modal">&times;</button>
+      </div>
+      <form id="forgotPasswordForm" class="auth-form">
+        <div class="form-group">
+          <input type="email" name="email" placeholder="Введите ваш Email" required class="neon-input">
+          <div class="input-glow"></div>
+        </div>
+        <button type="submit" class="neon-submit-btn">
+          <span class="btn-text">ОТПРАВИТЬ</span>
+          <span class="btn-loader"></span>
+        </button>
+        <div class="form-footer">
+          <p><a href="#" class="switch-to-login neon-link">Вернуться ко входу</a></p>
+        </div>
+      </form>
+      <div id="forgotPasswordMessage" class="message"></div>
+    </div>
+  </div>
+
+  <!-- ==================== ОСНОВНОЙ КОНТЕНТ МАРКЕТА ==================== -->
+
+
+  <div class="main-content">
+    <main class="layout">
+      <!-- Боковая панель с фильтрами -->
+      <aside class="sidebar">
+        <h3>Онлайн-фильтры</h3>
+        <div class="group">
+          <span class="small">Жанры</span>
+          <div class="chips" id="genreChips"></div>
+        </div>
+        <div class="group">
+          <label class="small">Год выпуска</label>
+          <select id="yearSelect">
+            <option value="all">Любой</option>
+            <option value="2025">2025</option>
+            <option value="2024">2024</option>
+            <option value="2023">2023</option>
+            <option value="2022">2022</option>
+            <option value="2021">2021</option>
+            <option value="2020">2020</option>
+            <option value="2019">2019</option>
+          </select>
+        </div>
+        <div class="group">
+          <label class="small">Цена (макс)</label>
+          <input id="priceMax" type="number" min="0" step="1" placeholder="Любая" />
+        </div>
+        <div class="group">
+          <label class="small">Сортировка</label>
+          <select id="sortSelect">
+            <option value="new">По новизне</option>
+            <option value="popular">По популярности</option>
+            <option value="priceUp">Цена ↑</option>
+            <option value="priceDown">Цена ↓</option>
+            <option value="name">По названию (А-Я)</option>
+          </select>
+        </div>
+        <div class="button-group">
+          <button class="btn ghost" id="clearBtn">Сбросить всё</button>
+        </div>
+      </aside>
+
+      <!-- Каталог карточек -->
+      <section class="catalog" id="catalog" aria-live="polite"></section>
+    </main>
+
+    <!-- Кнопка загрузить ещё -->
+    <div class="load-more-container" id="loadMoreContainer">
+      <button class="load-more-btn" id="loadMoreBtn">Загрузить ещё 6 альбомов</button>
+    </div>
+  </div>
+
+  
+
+<!-- ===================== НЕОНОВЫЙ ФУТЕР ===================== -->
+<footer class="neon-footer">
+    <!-- Волнистая линия разделитель (как змея в header) -->
+    <div class="footer-wave">
+        <svg viewBox="0 0 120 60" preserveAspectRatio="none">
+            <path d="M0 30 Q30 0, 60 30 T120 30" class="wave-line"/>
+        </svg>
+    </div>
+
+    <div class="footer-container">
+        <!-- Основная сетка футера -->
+        <div class="footer-grid">
+            <!-- Колонка 1: Логотип и описание -->
+            <div class="footer-col footer-about">
+                <div class="footer-logo">
+                    <span class="logo-text">Vinyl<span class="logo-highlight neon-glow">Neon</span></span>
+                </div>
+                <p class="footer-description">
+                    Магазин виниловых пластинок в неоновом свете. 
+                    Аутентичный звук, редкие издания и атмосфера киберпанка.
+                </p>
+                <div class="social-links">
+                    <a href="#" class="social-link" aria-label="Telegram">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+                        </svg>
+                    </a>
+                    <a href="#" class="social-link" aria-label="VK">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M22 2L15 20 11 13 4 9 20 2z"/>
+                        </svg>
+                    </a>
+                    <a href="#" class="social-link" aria-label="Instagram">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+                            <circle cx="12" cy="12" r="3"/>
+                        </svg>
+                    </a>
+                    <a href="#" class="social-link" aria-label="YouTube">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <rect x="2" y="4" width="20" height="16" rx="4"/>
+                            <path d="M10 9l5 3-5 3V9z"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Колонка 2: Навигация -->
+            <div class="footer-col">
+                <h3 class="footer-title neon-text">НАВИГАЦИЯ</h3>
+                <ul class="footer-menu">
+                    <li><a href="index.html" class="footer-link">Главная</a></li>
+                    <li><a href="market.html" class="footer-link">Магазин</a></li>
+                    <li><a href="news.html" class="footer-link">Новости</a></li>
+                    <li><a href="contacts.html" class="footer-link">Контакты</a></li>
+                </ul>
+            </div>
+
+            <!-- Колонка 3: Каталог -->
+            <div class="footer-col">
+                <h3 class="footer-title neon-text">НОВОСТИ</h3>
+                <ul class="footer-menu">
+                    <li>
+                        <a href="news.html#all-news" class="footer-link">
+                            <span class="nav-icon">📰</span> Все новости
+                        </a>
+                    </li>
+                    <li>
+                        <a href="news.html#releases" class="footer-link">
+                            <span class="nav-icon">💿</span> Релизы
+                        </a>
+                    </li>
+                    <li>
+                        <a href="news.html#events" class="footer-link">
+                            <span class="nav-icon">🎪</span> События
+                        </a>
+                    </li>
+                    <li>
+                        <a href="news.html#sales" class="footer-link">
+                            <span class="nav-icon">🏷️</span> Акции
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Колонка 4: Контакты -->
+            <div class="footer-col">
+                <h3 class="footer-title neon-text">КОНТАКТЫ</h3>
+                <ul class="footer-menu">
+                    <li>
+                        <a href="tel:+78001234567" class="footer-link contact-link">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ff00ff">
+                                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                            </svg>
+                            8 (800) 123-45-67
+                        </a>
+                    </li>
+                    <li>
+                        <a href="mailto:info@vinylneon.ru" class="footer-link contact-link">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00ff9d">
+                                <rect x="2" y="4" width="20" height="16" rx="2"/>
+                                <path d="M22 7L12 13 2 7"/>
+                            </svg>
+                            info@vinylneon.ru
+                        </a>
+                    </li>
+                    <li>
+                        <span class="footer-link contact-link">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00b3ff">
+                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                                <circle cx="12" cy="10" r="3"/>
+                            </svg>
+                            <span class="city-text">Калининград, ул. Музыкальная 42</span>
+                        </span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Колонка 5: Подписка -->
+            <div class="footer-col footer-newsletter">
+                <h3 class="footer-title neon-text">РАССЫЛКА</h3>
+                <p class="newsletter-text">Подпишитесь и получите скидку 10% на первый заказ</p>
+                <form class="newsletter-form" id="newsletterForm">
+                    <div class="newsletter-input-group">
+                        <input type="email" placeholder="Ваш Email" required class="newsletter-input">
+                        <button type="submit" class="newsletter-btn">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white">
+                                <line x1="5" y1="12" x2="19" y2="12"/>
+                                <polyline points="12 5 19 12 12 19"/>
+                            </svg>
+                        </button>
+                    </div>
+                </form>
+                <div class="payment-methods">
+                    <span class="payment-icon" title="Visa">VISA</span>
+                    <span class="payment-icon" title="Mastercard">MC</span>
+                    <span class="payment-icon" title="МИР">МИР</span>
+                    <span class="payment-icon" title="SBP">СБП</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Нижняя часть футера -->
+        <div class="footer-bottom">
+            <div class="footer-bottom-content">
+                <div class="copyright">
+                    © 2026 VinylNeon. Все права защищены.
+                </div>
+                <div class="footer-bottom-links">
+                    <a href="#" class="footer-bottom-link">Политика конфиденциальности</a>
+                    <a href="#" class="footer-bottom-link">Пользовательское соглашение</a>
+                    <a href="#" class="footer-bottom-link">Карта сайта</a>
+                </div>
+                <div class="developer">
+                    <span class="dev-text">Сайт сделан с </span>
+                    <svg class="heart-icon" width="14" height="14" viewBox="0 0 24 24" fill="#ff00ff" stroke="none">
+                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+  <!-- Подключение скриптов -->
+
+  <script src="js/auth-fixed.js"></script>
+  <script src="js/market.js"></script>
+</body>
+</html>
