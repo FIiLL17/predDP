@@ -1,9 +1,9 @@
-// Данные альбомов
 const albums = [
     {
         id: 1,
         title: "Midnight City",
         artist: "M83",
+        genre: "Synth-pop",                          
         cover: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80",
         audio: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
         duration: "4:04",
@@ -13,6 +13,7 @@ const albums = [
         id: 2,
         title: "Blinding Lights",
         artist: "The Weeknd",
+        genre: "R&B / Synth-pop",
         cover: "https://images.unsplash.com/photo-1511379938547-c1f69419868d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80",
         audio: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
         duration: "3:22",
@@ -22,6 +23,7 @@ const albums = [
         id: 3,
         title: "Levitating",
         artist: "Dua Lipa",
+        genre: "Dance-pop",
         cover: "https://images.unsplash.com/photo-1518609878373-06d740f60d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80",
         audio: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
         duration: "3:24",
@@ -31,6 +33,7 @@ const albums = [
         id: 4,
         title: "Stay",
         artist: "The Kid LAROI, Justin Bieber",
+        genre: "Pop",
         cover: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80",
         audio: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3",
         duration: "2:23",
@@ -40,6 +43,7 @@ const albums = [
         id: 5,
         title: "Good 4 U",
         artist: "Olivia Rodrigo",
+        genre: "Pop-punk",
         cover: "https://images.unsplash.com/photo-1519281682544-5f37c4b14c47?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80",
         audio: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3",
         duration: "2:59",
@@ -56,13 +60,10 @@ const manualScrollBtn = document.getElementById('manualScrollBtn');
 
 // Настройки прокрутки
 let isAutoScroll = true;
-let isDragging = false;
-let startX = 0;
-let scrollLeft = 0;
-let velocity = 0;
-let animationFrameId = null;
-let lastTimestamp = 0;
 let scrollTimeout = null;
+let animationFrameId = null;
+let currentPosition = 0;
+let targetPosition = 0;
 
 // Активное аудио
 let activeAudio = null;
@@ -72,8 +73,6 @@ let activeCard = null;
 let cardWidth = 350;
 let containerWidth = 0;
 let trackWidth = 0;
-let maxScroll = 0;
-let currentScrollPosition = 0;
 
 // API для работы с избранным и корзиной
 const FAVORITES_API = '/api/user/favorites.php';
@@ -229,6 +228,7 @@ function createAlbumCard(album) {
         <div class="song-info">
             <h2 class="song-title">${album.title}</h2>
             <p class="artist">${album.artist}</p>
+            <p class="genre">${album.genre}</p> 
         </div>
         
         <div class="controls">
@@ -284,7 +284,11 @@ function createAlbumCard(album) {
 
 // Инициализация карточек
 function initAlbums() {
-    const duplicatedAlbums = [...albums, ...albums, ...albums];
+    // Очищаем трек
+    scrollTrack.innerHTML = '';
+    
+    // Создаем дубликаты для бесконечной прокрутки
+    const duplicatedAlbums = [...albums, ...albums, ...albums, ...albums, ...albums];
     
     duplicatedAlbums.forEach(album => {
         const card = createAlbumCard(album);
@@ -295,6 +299,7 @@ function initAlbums() {
     
     setTimeout(() => {
         updateDimensions();
+        // Запускаем автопрокрутку по умолчанию
         startAutoScroll();
     }, 100);
 }
@@ -314,11 +319,7 @@ function updateDimensions() {
         containerWidth = window.innerWidth;
     }
     
-    trackWidth = scrollTrack.scrollWidth / 3; // Оригинальная ширина (одна копия)
-    maxScroll = -(trackWidth - containerWidth);
-    
-    // Обновляем текущую позицию
-    currentScrollPosition = getCurrentScrollPosition();
+    trackWidth = scrollTrack.scrollWidth / 3; // Оригинальная ширина
 }
 
 // Получение текущей позиции прокрутки
@@ -337,21 +338,12 @@ function setScrollPosition(position, animate = true) {
         scrollTrack.style.transition = 'none';
     }
     
-    // Ограничиваем позицию
-    let newPosition = position;
-    if (position < maxScroll) {
-        newPosition = maxScroll;
-    } else if (position > 0) {
-        newPosition = 0;
-    }
-    
-    scrollTrack.style.transform = `translateX(${newPosition}px)`;
-    currentScrollPosition = newPosition;
+    scrollTrack.style.transform = `translateX(${position}px)`;
+    currentPosition = position;
     
     if (!animate) {
-        // Восстанавливаем transition
         setTimeout(() => {
-            scrollTrack.style.transition = 'transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+            scrollTrack.style.transition = 'transform 40s linear'; // Очень медленная и плавная прокрутка
         }, 10);
     }
 }
@@ -367,7 +359,7 @@ function scrollOneAlbum(direction) {
     }
     
     const scrollAmount = direction * cardWidth;
-    const newPosition = currentScrollPosition + scrollAmount;
+    const newPosition = currentPosition + scrollAmount;
     setScrollPosition(newPosition);
     
     // Блокируем повторные клики на 500ms
@@ -382,13 +374,14 @@ function scrollOneAlbum(direction) {
 
 // Включение автопрокрутки
 function startAutoScroll() {
+    // Останавливаем существующую анимацию
     if (animationFrameId) {
         cancelAnimationFrame(animationFrameId);
         animationFrameId = null;
     }
     
-    scrollTrack.style.transition = 'none';
-    scrollTrack.style.transform = 'translateX(0)';
+    // Сбрасываем позицию на начало
+    setScrollPosition(0, false);
     
     setTimeout(() => {
         scrollTrack.classList.add('auto-scroll');
@@ -399,6 +392,7 @@ function startAutoScroll() {
         if (manualScrollBtn) manualScrollBtn.classList.remove('active');
         isAutoScroll = true;
         
+        // Скрываем кнопки навигации
         if (prevBtn) {
             prevBtn.style.opacity = '0';
             prevBtn.style.pointerEvents = 'none';
@@ -444,13 +438,14 @@ function stopAutoScroll() {
     
     setTimeout(() => {
         scrollTrack.style.transition = 'transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-        currentScrollPosition = adjustedX;
+        currentPosition = adjustedX;
     }, 50);
     
     if (autoScrollBtn) autoScrollBtn.classList.remove('active');
     if (manualScrollBtn) manualScrollBtn.classList.add('active');
     isAutoScroll = false;
     
+    // Показываем кнопки навигации
     if (prevBtn) {
         prevBtn.style.opacity = '1';
         prevBtn.style.pointerEvents = 'auto';
@@ -459,151 +454,6 @@ function stopAutoScroll() {
         nextBtn.style.opacity = '1';
         nextBtn.style.pointerEvents = 'auto';
     }
-}
-
-// Drag-прокрутка
-function initDragScroll() {
-    if (!scrollTrack) return;
-    
-    scrollTrack.addEventListener('mousedown', startDrag);
-    document.addEventListener('mousemove', drag);
-    document.addEventListener('mouseup', endDrag);
-    
-    scrollTrack.addEventListener('touchstart', startDragTouch);
-    document.addEventListener('touchmove', dragTouch);
-    document.addEventListener('touchend', endDrag);
-    
-    scrollTrack.addEventListener('wheel', handleWheel, { passive: false });
-}
-
-// Drag обработчики
-function startDrag(e) {
-    if (isAutoScroll) {
-        stopAutoScroll();
-    }
-    
-    isDragging = true;
-    scrollTrack.classList.add('grabbing');
-    startX = e.pageX;
-    scrollLeft = currentScrollPosition;
-    
-    velocity = 0;
-    lastTimestamp = 0;
-    if (animationFrameId) {
-        cancelAnimationFrame(animationFrameId);
-        animationFrameId = null;
-    }
-}
-
-function drag(e) {
-    if (!isDragging) return;
-    e.preventDefault();
-    
-    const x = e.pageX;
-    const walk = (x - startX);
-    
-    let newScrollLeft = scrollLeft + walk;
-    setScrollPosition(newScrollLeft, false);
-    
-    const now = performance.now();
-    if (lastTimestamp) {
-        const deltaTime = now - lastTimestamp;
-        if (deltaTime > 0) {
-            velocity = walk / deltaTime;
-        }
-    }
-    lastTimestamp = now;
-}
-
-function endDrag() {
-    if (!isDragging) return;
-    
-    isDragging = false;
-    scrollTrack.classList.remove('grabbing');
-    
-    if (Math.abs(velocity) > 0.1) {
-        startInertiaAnimation();
-    }
-}
-
-// Touch обработчики
-function startDragTouch(e) {
-    if (isAutoScroll) {
-        stopAutoScroll();
-    }
-    
-    isDragging = true;
-    scrollTrack.classList.add('grabbing');
-    startX = e.touches[0].pageX;
-    scrollLeft = currentScrollPosition;
-    
-    velocity = 0;
-    lastTimestamp = 0;
-    if (animationFrameId) {
-        cancelAnimationFrame(animationFrameId);
-        animationFrameId = null;
-    }
-}
-
-function dragTouch(e) {
-    if (!isDragging) return;
-    e.preventDefault();
-    
-    const x = e.touches[0].pageX;
-    const walk = (x - startX);
-    
-    let newScrollLeft = scrollLeft + walk;
-    setScrollPosition(newScrollLeft, false);
-    
-    const now = performance.now();
-    if (lastTimestamp) {
-        const deltaTime = now - lastTimestamp;
-        if (deltaTime > 0) {
-            velocity = walk / deltaTime;
-        }
-    }
-    lastTimestamp = now;
-}
-
-// Анимация инерции
-function startInertiaAnimation() {
-    if (animationFrameId) {
-        cancelAnimationFrame(animationFrameId);
-    }
-    
-    let lastTime = performance.now();
-    
-    function animateInertia(currentTime) {
-        const deltaTime = currentTime - lastTime;
-        lastTime = currentTime;
-        
-        if (Math.abs(velocity) > 0.1) {
-            velocity *= 0.95;
-            let newPosition = currentScrollPosition + velocity * deltaTime;
-            
-            setScrollPosition(newPosition, false);
-            
-            animationFrameId = requestAnimationFrame(animateInertia);
-        } else {
-            velocity = 0;
-            animationFrameId = null;
-        }
-    }
-    
-    animationFrameId = requestAnimationFrame(animateInertia);
-}
-
-// Колесо мыши
-function handleWheel(e) {
-    e.preventDefault();
-    
-    if (isAutoScroll) {
-        stopAutoScroll();
-    }
-    
-    const delta = e.deltaY;
-    const newPosition = currentScrollPosition + delta * 0.5;
-    setScrollPosition(newPosition);
 }
 
 // Форматирование времени
@@ -782,7 +632,7 @@ function addCardEventListeners(card, album) {
         }
     });
     
-    // Обработчик кнопки корзины (РАБОТАЕТ КАК ПЕРЕКЛЮЧАТЕЛЬ)
+    // Обработчик кнопки корзины
     cartBtn.addEventListener('click', async () => {
         const productId = album.id;
         const productTitle = album.title;
@@ -992,15 +842,13 @@ if (!window.authManager) {
     };
 }
 
-// Функция показа уведомлений ДЛЯ КАРТОЧЕК АЛЬБОМОВ
+// Функция показа уведомлений
 function showAlbumNotification(message, type = 'info') {
-    // Используем существующую функцию из auth-fixed.js если она есть
     if (window.showNotification && window.showNotification !== showAlbumNotification) {
         window.showNotification(message, type);
         return;
     }
     
-    // Иначе создаем свое уведомление
     let container = document.getElementById('notificationContainer');
     if (!container) {
         container = document.createElement('div');
@@ -1017,7 +865,6 @@ function showAlbumNotification(message, type = 'info') {
         document.body.appendChild(container);
     }
     
-    // Создаем уведомление
     const notification = document.createElement('div');
     notification.style.cssText = `
         background: ${type === 'success' ? '#00ff9d' : type === 'error' ? '#ff2f92' : type === 'warning' ? '#ff9900' : '#00b3ff'};
@@ -1033,7 +880,6 @@ function showAlbumNotification(message, type = 'info') {
     notification.textContent = message;
     container.appendChild(notification);
     
-    // Автоудаление через 3 секунды
     setTimeout(() => {
         notification.style.animation = 'slideOut 0.3s ease';
         setTimeout(() => {
@@ -1054,17 +900,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     initAlbums();
-    initDragScroll();
     
     if (prevBtn) {
         prevBtn.addEventListener('click', () => {
-            scrollOneAlbum(1);
+            scrollOneAlbum(1); // Влево
         });
     }
     
     if (nextBtn) {
         nextBtn.addEventListener('click', () => {
-            scrollOneAlbum(-1);
+            scrollOneAlbum(-1); // Вправо
         });
     }
     
@@ -1106,14 +951,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
     
-    // Инициализация состояний
     setTimeout(() => {
         initializeFavoritesState();
         initializeCartState();
     }, 1500);
 });
 
-// Добавьте CSS анимации для уведомлений если их еще нет
+// Добавление CSS анимаций
 if (!document.querySelector('#notification-animations')) {
     const style = document.createElement('style');
     style.id = 'notification-animations';
@@ -1137,6 +981,15 @@ if (!document.querySelector('#notification-animations')) {
             to {
                 transform: translateX(100%);
                 opacity: 0;
+            }
+        }
+        
+        @keyframes scroll-horizontal {
+            0% {
+                transform: translateX(0);
+            }
+            100% {
+                transform: translateX(-50%);
             }
         }
     `;

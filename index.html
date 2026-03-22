@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="css/main.css">
     <title>Document</title>
 </head>
 <body>
@@ -16,8 +16,8 @@
                         <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
                         <circle cx="12" cy="10" r="3"/>
                     </svg>
-                    <select name="city" id="city-select" class="city-select neon-select">
-                        <option value="">Калининград</option>
+                    <select name="city" id="city-select" class="city-select neon-select" style="background-color: #1d0833">
+                        <option value="kalinigrad">Калининград</option>
                         <option value="petersburg">Санкт-Петербург</option>
                         <option value="samara">Самара</option>
                         <option value="perm">Пермь</option>
@@ -55,20 +55,20 @@
                             </a>
                         </li>
                         <li class="nav-item neon-nav-item">
-                            <a href="#" class="nav-link neon-nav-link">
+                            <a href="market.html" class="nav-link neon-nav-link">
                                 <span class="nav-icon">🛒</span>
                                 Магазин
                                 <span class="new-badge neon-badge">New</span>
                             </a>
                         </li>
                         <li class="nav-item neon-nav-item">
-                            <a href="#" class="nav-link neon-nav-link">
+                            <a href="news.html" class="nav-link neon-nav-link">
                                 <span class="nav-icon">📻</span>
                                 Новости
                             </a>
                         </li>
                         <li class="nav-item neon-nav-item">
-                            <a href="#" class="nav-link neon-nav-link">
+                            <a href="contacts.html" class="nav-link neon-nav-link">
                                 <span class="nav-icon">📍</span>
                                 Контакты
                             </a>
@@ -136,7 +136,6 @@
         </div>
         
         <div class="dropdown-divider"></div>
-        
 <a href="user.html" class="dropdown-item" onclick="AuthManager.redirectToProfile()">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
@@ -145,14 +144,15 @@
     Профиль
 </a>
         
-        <a href="orders.php" class="dropdown-item">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
-                <line x1="3" y1="6" x2="21" y2="6"/>
-                <path d="M16 10a4 4 0 0 1-8 0"/>
-            </svg>
-            Заказы
-        </a>
+<a href="user.html#orders" class="dropdown-item">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+        <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+        <line x1="3" y1="6" x2="21" y2="6"/>
+        <path d="M16 10a4 4 0 0 1-8 0"/>
+    </svg>
+    Заказы
+    <span class="badge" id="ordersCountBadge" style="display: none;">0</span>
+</a>
         
         <a href="favorites.php" class="dropdown-item">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -270,25 +270,6 @@
         <div id="registerMessage" class="message"></div>
     </div>
 </div>
-<style>/* Исправление для placeholder */
-.neon-input::placeholder {
-    color: rgba(255, 255, 255, 0.5) !important;
-    opacity: 1 !important;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
-.neon-input:-ms-input-placeholder {
-    color: rgba(255, 255, 255, 0.5) !important;
-}
-
-.neon-input::-ms-input-placeholder {
-    color: rgba(255, 255, 255, 0.5) !important;
-}
-
-/* При фокусе */
-.neon-input:focus::placeholder {
-    color: rgba(255, 255, 255, 0.3) !important;
-}</style>
 
     <!-- Модальное окно корзины -->
 <div class="cart-modal" id="cartModal">
@@ -383,28 +364,12 @@
     </svg>
 </div>
 
-        <div class="container_slider_css" id="container_slider_css">
-      <img
-        class="photo_slider_css"
-        src="img/plas-slider/plast.jpg"
-        alt=""
-      />
-      <img
-        class="photo_slider_css"
-        src="img/plas-slider/plasagram.png"
-        alt=""
-      />
-      <img
-        class="photo_slider_css"
-        src="img/plas-slider/albomback.png"
-        alt=""
-      />
-      <img
-        class="photo_slider_css"
-        src="img/plas-slider/plasgramall.png"
-        alt=""
-      />
-    </div>
+<div class="container_slider_css" id="container_slider_css">
+  <img class="photo_slider_css" src="img/plas-slider/plast.jpg" alt="sar" />
+  <img class="photo_slider_css" src="img/plas-slider/1.png" alt="mar" />
+  <img class="photo_slider_css" src="img/plas-slider/albomback.png" alt="dar" />
+  <img class="photo_slider_css" src="img/plas-slider/plasgramall.png" alt="gar" />
+</div>
 
     <div class="scroll-container">
             <button class="nav-btn prev" id="prevBtn">
@@ -450,95 +415,246 @@
     </div>
 </div>
 
-<!-- Добавьте CSS для нового модального окна -->
-<style>
-.details-modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.8);
-    z-index: 9999;
-    align-items: center;
-    justify-content: center;
-}
+<!-- ===================== БЛОК ОТЗЫВОВ ===================== -->
+<section class="testimonials-section" id="testimonialsSection">
+  <div class="container-reviews">
+    <div class="section-header">
+      <div class="neon-underline"></div>
+      <div class="rating-summary" id="ratingSummary"></div>
+    </div>
 
-.details-modal-content {
-    width: 90%;
-    max-width: 600px;
-    max-height: 80vh;
-    overflow-y: auto;
-}
+    <!-- Сетка последних отзывов -->
+    <div class="testimonials-grid" id="recentReviews"></div>
 
-.details-item {
-    display: flex;
-    align-items: center;
-    padding: 15px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    background: rgba(255, 255, 255, 0.05);
-    margin-bottom: 10px;
-    border-radius: 8px;
-}
+    <!-- Кнопки -->
+    <div class="button-group">
+      <button class="btn" id="viewAllBtn">Все отзывы</button>
+      <button class="btn btn-outline" id="writeReviewBtn">Оставить отзыв</button>
+    </div>
+  </div>
+</section>
 
-.details-item-img {
-    width: 80px;
-    height: 80px;
-    border-radius: 8px;
-    overflow: hidden;
-    margin-right: 15px;
-    flex-shrink: 0;
-}
+<!-- МОДАЛЬНОЕ ОКНО ПРОСМОТРА ВСЕХ ОТЗЫВОВ -->
+<div class="modal" id="viewModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>Все отзывы</h2>
+      <button class="modal-close" id="closeViewModal">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="filter-bar">
+        <button class="filter-btn active" data-filter="all">Все</button>
+        <button class="filter-btn" data-filter="5">5 ★</button>
+        <button class="filter-btn" data-filter="4">4 ★</button>
+        <button class="filter-btn" data-filter="3">3 ★</button>
+      </div>
+      <div class="reviews-list" id="allReviewsList"></div>
+    </div>
+  </div>
+</div>
 
-.details-item-img img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
+<!-- МОДАЛЬНОЕ ОКНО НАПИСАНИЯ ОТЗЫВА -->
+<div class="modal write-modal" id="writeModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>Оставить отзыв</h2>
+      <button class="modal-close" id="closeWriteModal">&times;</button>
+    </div>
+    <div class="modal-body">
+      <form class="vinyl-form" id="reviewForm">
+        <!-- Удалено поле "Ваше имя" -->
+        <div class="form-group">
+          <label class="form-label">Оценка</label>
+          <div class="rating-selector">
+            <div class="rating-stars" id="writeRatingStars">
+              <span data-value="1">★</span>
+              <span data-value="2">★</span>
+              <span data-value="3">★</span>
+              <span data-value="4">★</span>
+              <span data-value="5">★</span>
+            </div>
+            <div class="rating-value-display" id="selectedRating">5 звёзд</div>
+          </div>
+          <input type="hidden" id="ratingValue" value="5">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Отзыв</label>
+          <textarea class="form-textarea" id="reviewText" placeholder="Поделитесь впечатлениями..." required></textarea>
+        </div>
+        <button type="submit" class="btn-submit">Отправить отзыв</button>
+      </form>
+    </div>
+  </div>
+</div>
 
-.details-item-info {
-    flex-grow: 1;
-}
 
-.details-item-title {
-    color: white;
-    font-size: 1.1rem;
-    margin-bottom: 5px;
-    font-weight: 600;
-}
 
-.details-item-artist {
-    color: #aaa;
-    font-size: 0.9rem;
-    margin-bottom: 8px;
-}
+<!-- ===================== НЕОНОВЫЙ ФУТЕР ===================== -->
+<footer class="neon-footer">
+    <!-- Волнистая линия разделитель (как змея в header) -->
+    <div class="footer-wave">
+        <svg viewBox="0 0 120 60" preserveAspectRatio="none">
+            <path d="M0 30 Q30 0, 60 30 T120 30" class="wave-line"/>
+        </svg>
+    </div>
 
-.details-item-price {
-    color: var(--neon-green);
-    font-weight: bold;
-    font-size: 1.2rem;
-}
+    <div class="footer-container">
+        <!-- Основная сетка футера -->
+        <div class="footer-grid">
+            <!-- Колонка 1: Логотип и описание -->
+            <div class="footer-col footer-about">
+                <div class="footer-logo">
+                    <span class="logo-text">Vinyl<span class="logo-highlight neon-glow">Neon</span></span>
+                </div>
+                <p class="footer-description">
+                    Магазин виниловых пластинок в неоновом свете. 
+                    Аутентичный звук, редкие издания и атмосфера киберпанка.
+                </p>
+                <div class="social-links">
+                    <a href="#" class="social-link" aria-label="Telegram">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+                        </svg>
+                    </a>
+                    <a href="#" class="social-link" aria-label="VK">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M22 2L15 20 11 13 4 9 20 2z"/>
+                        </svg>
+                    </a>
+                    <a href="#" class="social-link" aria-label="Instagram">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+                            <circle cx="12" cy="12" r="3"/>
+                        </svg>
+                    </a>
+                    <a href="#" class="social-link" aria-label="YouTube">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <rect x="2" y="4" width="20" height="16" rx="4"/>
+                            <path d="M10 9l5 3-5 3V9z"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
 
-.loading-spinner {
-    text-align: center;
-    padding: 40px;
-}
+            <!-- Колонка 2: Навигация -->
+            <div class="footer-col">
+                <h3 class="footer-title neon-text">НАВИГАЦИЯ</h3>
+                <ul class="footer-menu">
+                    <li><a href="index.html" class="footer-link">Главная</a></li>
+                    <li><a href="market.html" class="footer-link">Магазин</a></li>
+                    <li><a href="news.html" class="footer-link">Новости</a></li>
+                    <li><a href="contacts.html" class="footer-link">Контакты</a></li>
+                </ul>
+            </div>
 
-.spinner {
-    width: 40px;
-    height: 40px;
-    border: 4px solid rgba(255, 255, 255, 0.1);
-    border-radius: 50%;
-    border-top-color: var(--neon-blue);
-    animation: spin 1s ease-in-out infinite;
-    margin: 0 auto 20px;
-}
+            <!-- Колонка 3: Каталог -->
+            <div class="footer-col">
+                <h3 class="footer-title neon-text">НОВОСТИ</h3>
+                <ul class="footer-menu">
+                    <li>
+                        <a href="news.html#all-news" class="footer-link">
+                            <span class="nav-icon">📰</span> Все новости
+                        </a>
+                    </li>
+                    <li>
+                        <a href="news.html#releases" class="footer-link">
+                            <span class="nav-icon">💿</span> Релизы
+                        </a>
+                    </li>
+                    <li>
+                        <a href="news.html#events" class="footer-link">
+                            <span class="nav-icon">🎪</span> События
+                        </a>
+                    </li>
+                    <li>
+                        <a href="news.html#sales" class="footer-link">
+                            <span class="nav-icon">🏷️</span> Акции
+                        </a>
+                    </li>
+                </ul>
+            </div>
 
-@keyframes spin {
-    to { transform: rotate(360deg); }
-}
-</style>
+            <!-- Колонка 4: Контакты -->
+            <div class="footer-col">
+                <h3 class="footer-title neon-text">КОНТАКТЫ</h3>
+                <ul class="footer-menu">
+                    <li>
+                        <a href="tel:+78001234567" class="footer-link contact-link">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ff00ff">
+                                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                            </svg>
+                            8 (800) 123-45-67
+                        </a>
+                    </li>
+                    <li>
+                        <a href="mailto:info@vinylneon.ru" class="footer-link contact-link">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00ff9d">
+                                <rect x="2" y="4" width="20" height="16" rx="2"/>
+                                <path d="M22 7L12 13 2 7"/>
+                            </svg>
+                            info@vinylneon.ru
+                        </a>
+                    </li>
+                    <li>
+                        <span class="footer-link contact-link">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00b3ff">
+                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                                <circle cx="12" cy="10" r="3"/>
+                            </svg>
+                            <span class="city-text">Калининград, ул. Музыкальная 42</span>
+                        </span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Колонка 5: Подписка -->
+            <div class="footer-col footer-newsletter">
+                <h3 class="footer-title neon-text">РАССЫЛКА</h3>
+                <p class="newsletter-text">Подпишитесь и получите скидку 10% на первый заказ</p>
+                <form class="newsletter-form" id="newsletterForm">
+                    <div class="newsletter-input-group">
+                        <input type="email" placeholder="Ваш Email" required class="newsletter-input">
+                        <button type="submit" class="newsletter-btn">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white">
+                                <line x1="5" y1="12" x2="19" y2="12"/>
+                                <polyline points="12 5 19 12 12 19"/>
+                            </svg>
+                        </button>
+                    </div>
+                </form>
+                <div class="payment-methods">
+                    <span class="payment-icon" title="Visa">VISA</span>
+                    <span class="payment-icon" title="Mastercard">MC</span>
+                    <span class="payment-icon" title="МИР">МИР</span>
+                    <span class="payment-icon" title="SBP">СБП</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Нижняя часть футера -->
+        <div class="footer-bottom">
+            <div class="footer-bottom-content">
+                <div class="copyright">
+                    © 2026 VinylNeon. Все права защищены.
+                </div>
+                <div class="footer-bottom-links">
+                    <a href="#" class="footer-bottom-link">Политика конфиденциальности</a>
+                    <a href="#" class="footer-bottom-link">Пользовательское соглашение</a>
+                    <a href="#" class="footer-bottom-link">Карта сайта</a>
+                </div>
+                <div class="developer">
+                    <span class="dev-text">Сайт сделан с </span>
+                    <svg class="heart-icon" width="14" height="14" viewBox="0 0 24 24" fill="#ff00ff" stroke="none">
+                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+
 
 <script>
 
@@ -552,16 +668,8 @@ document.addEventListener('click', function(e) {
      }
  });
 </script>
-<script src="js/auth-manager.js"></script>  
 <script src="js/auth-fixed.js"></script>
-<!-- <script src="js/auth-simple.js"></script> -->
-<!-- <script src="js/auth-state.js"></script>
-<script src="js/auth.js"></script>
-<script src="js/user-menu.js"></script> -->
-<!-- <script src="js/cart.js"></script>
-<script src="js/faivorits.js"></script> -->
-<!-- <script src="js/main.js"></script> -->
 <script src="js/popular_albom.js"></script>
-
+<script src="js/reviews.js"></script>
 </body>
 </html>

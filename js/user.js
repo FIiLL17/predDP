@@ -105,7 +105,12 @@ async function initAdminPanelFromAPI() {
 // Открытие админ-панели
 function openAdminPanel() {
     console.log('Открытие админ-панели...');
-    window.open('admin.html', '_blank');
+    const token = getAuthToken();
+    if (!token) {
+        alert('Ошибка авторизации');
+        return;
+    }
+    window.open('api/admin/admin.php?token=' + encodeURIComponent(token), '_blank');
 }
 
 // Обновление данных пользователя на странице
@@ -146,6 +151,8 @@ async function updateUserProfileFromAPI() {
     // Статистика
     updateElementText('bonusPoints', (userInfo.bonus_points || 0).toLocaleString('ru-RU') + ' ₽');
     updateElementText('discountPercent', (userInfo.discount_percent || 0) + '%');
+    // Обновляем количество заказов
+    updateElementText('totalOrders', userInfo.orders_count || 0);
     
     console.log('Данные профиля обновлены');
 }
@@ -270,24 +277,24 @@ function renderAddressesList(addresses, container) {
             <div class="address-details">
                 <div class="address-row">
                     <span class="address-label">Получатель:</span>
-                    <span class="address-value">${address.full_name || 'Не указан'}</span>
+                    <span class="address-value">${escapeHtml(address.full_name) || 'Не указан'}</span>
                 </div>
                 <div class="address-row">
                     <span class="address-label">Телефон:</span>
-                    <span class="address-value">${address.phone || 'Не указан'}</span>
+                    <span class="address-value">${escapeHtml(address.phone) || 'Не указан'}</span>
                 </div>
                 <div class="address-row">
                     <span class="address-label">Адрес:</span>
-                    <span class="address-value">${fullAddress}</span>
+                    <span class="address-value">${escapeHtml(fullAddress)}</span>
                 </div>
                 ${address.notes ? `
                 <div class="address-row">
                     <span class="address-label">Примечания:</span>
-                    <span class="address-value">${address.notes}</span>
+                    <span class="address-value">${escapeHtml(address.notes)}</span>
                 </div>` : ''}
                 <div class="address-row">
                     <span class="address-label">Тип:</span>
-                    <span class="address-value">${address.title || 'Дом'}</span>
+                    <span class="address-value">${escapeHtml(address.title) || 'Дом'}</span>
                 </div>
                 <div class="address-row">
                     <span class="address-label">Создан:</span>
@@ -296,6 +303,16 @@ function renderAddressesList(addresses, container) {
             </div>
         `;
         container.appendChild(addressCard);
+    });
+}
+
+function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, function(m) {
+        if (m === '&') return '&amp;';
+        if (m === '<') return '&lt;';
+        if (m === '>') return '&gt;';
+        return m;
     });
 }
 
@@ -332,7 +349,7 @@ function showNoAddresses(container, message) {
         </div>
         <div style="text-align: center; padding: 40px; width: 100%;">
             <i class="fas fa-map-marker-alt" style="font-size: 3rem; color: var(--neon-blue); margin-bottom: 20px;"></i>
-            <p>${message}</p>
+            <p>${escapeHtml(message)}</p>
         </div>
     `;
 }
@@ -377,7 +394,7 @@ function renderOrders(orders) {
         const statusClass = getStatusClass(order.status);
         return `
             <tr>
-                <td>${order.order_number}</td>
+                <td>${escapeHtml(order.order_number)}</td>
                 <td>${new Date(order.created_at).toLocaleDateString('ru-RU')}</td>
                 <td>${Number(order.total_amount).toLocaleString('ru-RU')} ₽</td>
                 <td><span class="order-status ${statusClass}">${getStatusText(order.status)}</span></td>
@@ -423,7 +440,7 @@ function renderOrdersTable(orders, container) {
         
         const row = document.createElement('tr');
         row.innerHTML = `
-            <td>${order.order_number}</td>
+            <td>${escapeHtml(order.order_number)}</td>
             <td>${formattedDate}</td>
             <td>${formattedAmount}</td>
             <td><span class="${statusInfo.class}">${statusInfo.text}</span></td>
@@ -450,7 +467,7 @@ function showNoOrders(container, message) {
         <tr>
             <td colspan="5" style="text-align: center; padding: 40px;">
                 <i class="fas fa-box-open" style="font-size: 2rem; margin-bottom: 15px; color: var(--neon-blue);"></i>
-                <p>${message}</p>
+                <p>${escapeHtml(message)}</p>
             </td>
         </tr>
     `;
@@ -470,14 +487,13 @@ async function loadUserFavorites() {
     if (!favoritesGrid) return;
     
     try {
-                const response = await fetch(`${API_BASE}/favorites.php`, {
+        const response = await fetch(`${API_BASE}/favorites.php`, {
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
             }
         });
 
-        
         if (response.ok) {
             const data = await response.json();
             console.log('Избранное:', data);
@@ -524,7 +540,7 @@ function renderFavorites(favorites, container) {
                 ${imageHtml}
             </div>
             <div style="flex-grow: 1;">
-                <h3 style="margin: 0 0 8px 0; color: white; font-size: 1.1rem;">${fav.product_title}</h3>
+                <h3 style="margin: 0 0 8px 0; color: white; font-size: 1.1rem;">${escapeHtml(fav.product_title)}</h3>
                 <div style="color: var(--neon-green); font-weight: bold; font-size: 1.2rem; margin-bottom: 10px;">
                     ${parseFloat(fav.product_price).toLocaleString('ru-RU')} ₽
                 </div>
@@ -546,7 +562,7 @@ function showNoFavorites(container, message) {
     container.innerHTML = `
         <div style="text-align: center; padding: 40px; width: 100%;">
             <i class="fas fa-heart" style="font-size: 3rem; color: var(--neon-pink); margin-bottom: 20px;"></i>
-            <p>${message}</p>
+            <p>${escapeHtml(message)}</p>
         </div>
     `;
 }
@@ -1288,21 +1304,21 @@ async function saveProfileChanges(e) {
         
         if (data.success) {
             closeEditProfileModal();
-            await updateUserProfileFromAPI();
+            await updateUserProfileFromAPI(); // обновляем данные на странице
             alert('Профиль успешно обновлен!');
         } else {
             alert(data.message || 'Ошибка обновления');
         }
     } catch (error) {
         console.error('Ошибка сохранения:', error);
-        alert('Ошибка соединения');
+        alert('Ошибка соединения с сервером');
     }
 }
 
 // Основная инициализация
 async function initUserPage() {
     console.log('=== ИНИЦИАЛИЗАЦИЯ СТРАНИЦЫ ПРОФИЛЯ ===');
-    
+    document.getElementById('editProfileForm').addEventListener('submit', saveProfileChanges);
     // Проверяем авторизацию
     if (!checkAuth()) return;
 

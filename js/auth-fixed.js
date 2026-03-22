@@ -37,7 +37,7 @@ function checkAuth() {
     
     updateUI();
     // Если пользователь не авторизован, показываем 0
-    updateHeaderCounters(0, 0);
+    updateHeaderCounters(0, 0, 0);
     return false;
 }
 
@@ -50,7 +50,7 @@ function clearAuth() {
     updateUI();
     
     // Сбрасываем счетчики
-    updateHeaderCounters(0, 0);
+    updateHeaderCounters(0, 0, 0);
 }
 
 // Обновление интерфейса
@@ -277,7 +277,7 @@ async function logout() {
         showNotification('Вы вышли из системы', 'info');
         
         // Сбрасываем счетчики
-        updateHeaderCounters(0, 0);
+        updateHeaderCounters(0, 0, 0);
         
         return true;
     } else {
@@ -286,7 +286,7 @@ async function logout() {
         showNotification('Выход выполнен', 'info');
         
         // Сбрасываем счетчики
-        updateHeaderCounters(0, 0);
+        updateHeaderCounters(0, 0, 0);
         
         return false;
     }
@@ -346,23 +346,24 @@ async function loadUserCounters() {
     
     if (!authToken) {
         console.log('Нет токена, сбрасываем счетчики');
-        updateHeaderCounters(0, 0);
+        updateHeaderCounters(0, 0, 0);
         return;
     }
     
     try {
         // Загружаем счетчики параллельно
-        const [favoritesCount, cartCount] = await Promise.all([
+        const [favoritesCount, cartCount, ordersCount] = await Promise.all([
             getFavoritesCount(),
-            getCartCount()
+            getCartCount(),
+            getOrdersCount()
         ]);
         
-        console.log('Счетчики загружены:', { favorites: favoritesCount, cart: cartCount });
-        updateHeaderCounters(favoritesCount, cartCount);
+        console.log('Счетчики загружены:', { favorites: favoritesCount, cart: cartCount, orders: ordersCount });
+        updateHeaderCounters(favoritesCount, cartCount, ordersCount);
         
     } catch (error) {
         console.error('Ошибка загрузки счетчиков:', error);
-        updateHeaderCounters(0, 0);
+        updateHeaderCounters(0, 0, 0);
     }
 }
 
@@ -416,10 +417,36 @@ async function getCartCount() {
     }
 }
 
-function updateHeaderCounters(favoritesCount, cartCount) {
+async function getOrdersCount() {
+    try {
+        console.log('Запрашиваем количество заказов...');
+        const response = await fetch(API_BASE + '/api/user/orders_count.php', {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${authToken}`,
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error ${response.status}`);
+        }
+        
+        const data = await response.json();
+        console.log('Ответ orders_count.php:', data);
+        
+        return data.success ? data.count : 0;
+    } catch (error) {
+        console.error('Ошибка получения количества заказов:', error);
+        return 0;
+    }
+}
+
+function updateHeaderCounters(favoritesCount, cartCount, ordersCount) {
     const favoriteCountEl = document.getElementById('favoriteCount');
     const cartCountEl = document.getElementById('cartCount');
     const favoritesCountBadge = document.getElementById('favoritesCount');
+    const ordersCountBadge = document.getElementById('ordersCountBadge');
     
     if (favoriteCountEl) {
         favoriteCountEl.textContent = favoritesCount > 0 ? favoritesCount : '';
@@ -436,6 +463,11 @@ function updateHeaderCounters(favoritesCount, cartCount) {
         favoritesCountBadge.style.display = favoritesCount > 0 ? 'flex' : 'none';
     }
     
+    if (ordersCountBadge) {
+        ordersCountBadge.textContent = ordersCount > 0 ? ordersCount : '';
+        ordersCountBadge.style.display = ordersCount > 0 ? 'flex' : 'none';
+    }
+    
     // Анимация при обновлении
     if (favoritesCount > 0 && favoriteCountEl) {
         favoriteCountEl.style.transform = 'scale(1.2)';
@@ -448,6 +480,13 @@ function updateHeaderCounters(favoritesCount, cartCount) {
         cartCountEl.style.transform = 'scale(1.2)';
         setTimeout(() => {
             cartCountEl.style.transform = 'scale(1)';
+        }, 300);
+    }
+    
+    if (ordersCount > 0 && ordersCountBadge) {
+        ordersCountBadge.style.transform = 'scale(1.2)';
+        setTimeout(() => {
+            ordersCountBadge.style.transform = 'scale(1)';
         }, 300);
     }
 }
@@ -943,8 +982,9 @@ async function removeFromCartDetails(productId) {
 
 function checkoutFromDetails() {
     closeModal('detailsModal');
-    openModal('cartModal');
+    window.location.href = 'checkout.html';
 }
+window.checkoutFromDetails = checkoutFromDetails;
 
 // Добавьте обработчики кликов на иконки в header
 document.addEventListener('DOMContentLoaded', function() {
